@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+ <%- include ./partials/head.ejs %>
+<body>
+  <%- include ./partials/header.ejs %>
+  <main>
+    <div class="page-header">
+      <h2>Your Representives</h2>
+    </div>
+    <section id="intro">
+      <div class="card">
+        <p><a href="/checkvoter">Can I Vote?</a></p>
+      </div>
+    </section>
+    <section id="national-rep" class="deck">
+      <% value.forEach(item => { %>
+        <div class="card">
+          <h3><%= item.name %></h3>
+          <img src="<%= item.img_url %>" alt="<%= item.name %>" />
+          <p>Identifies as: <%= item.political_affiliation %></p>
+          <p>Time in Office: <%= item.length %></p>
+          <p>Phone: <%= item.phone %></p>
+        </div>
+      <% }) %>
+    </section>
+
+    <section id="state-rep" class="deck">
+      <% value.forEach(item => { %>
+        <div class="card">
+          <h3><%= item.name %></h3>
+          <img src="<%= item.img_url %>" alt="<%= item.name %>" />
+          <p>Identifies as: <%= item.political_affiliation %></p>
+          <p>Time in Office: <%= item.length %></p>
+          <p>Phone: <%= item.phone %></p>
+        </div>
+      <% }) %>
+    </section>
+
+  </main>
+  <%- include ./partials/footer.ejs %>
+</body>
+</html>
