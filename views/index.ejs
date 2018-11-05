@@ -9,26 +9,29 @@
     </div>
     <section id="intro">
       <p>Democracy works best when everyone participates. The first step in making your voice heard is to know who represents you at a state and national level. </p>
-      <p>Your personal information will not be stored anywhere and will only be used to immediately determine your representatives.</p>
+      <p>Your personal information will only be used to immediately determine your representatives.</p>
     </section>
-    <form action="/representatives" method="POST">
-      <feildset>
-        <legend>Who Are My Representives?</legend>
-        <div id="zip">
-          <p>For your national representives, enter your zip code below</p>
-          <label for="zip">
-              <input type="text" name="zip" value="zip-code" required>
-          </label>
-        </div>
+    <section class="deck">
+      <form action="/representatives" method="POST">
+        <feildset>
+          <legend>Who Are My Representives?</legend>
+          <div id="zip" class="card">
+            <p>For your national representives, enter your zip code below</p>
+            <label for="zip">
+                <input type="text" name="zip" value="zip-code" required>
+            </label>
+          </div>
 
-        <div id="address">
-          <p>For your state representives, enter your address below</p>
-          <label for="address">
-            <input type="text" name="address" id="address" value="address">
-          </label>
-          <button>Find My Reps</button>
-        </div>
-      </feildset>
+          <div id="address" class="card">
+            <p>For your state representives, enter your address below</p>
+            <label for="address">
+              <input type="text" name="address" id="street-address" value="address">
+              <input type="text" name="address" id="city-state-address" value="city and state">
+            </label>
+            <button>Find My Reps</button>
+          </div>
+        </feildset>
+      </section>
     </form>
   
      
