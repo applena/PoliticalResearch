@@ -20,7 +20,7 @@
   "dependencies": {
     "cors": "2.8.4",
     "dotenv": "6.1.0",
-    "ejs": "2.6.1",
+    "ejs": "^2.6.1",
     "express": "4.16.4",
     "pg": "7.6.0",
     "superagent": "4.0.0-beta.5"
