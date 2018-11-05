@@ -31,12 +31,19 @@ app.post('/representatives', (request, response) =>{
   console.log(request.body);
   let userAddress = '';
   if(request.body.address){
-    userAddress = request.body.address.split(' ').join('%20');
+    userAddress = request.body.address.join('%20').split(' ').join('%20');
   }
   else{
     userAddress = request.body.zip.split(' ').join('%20');
   }
-  getRepresentatives(userAddress);
+  console.log(userAddress);
+  getRepresentatives(userAddress)
+    .then (results => {
+      //results.render('./representatives');
+      response.render('./pages/representatives.ejs', {value: results});
+      console.log(results);
+    })
+
 });
 
 function getRepresentatives(address) {
@@ -46,6 +53,7 @@ function getRepresentatives(address) {
 
   return superagent.get(URL)
     .then(results =>{
+      //console.log(results);
       let relevantOffices = filterRelevantOffices(results.body.offices);
       let relevantIndices = relevantOffices.reduce( (acc, nextOffice) =>{
         return acc.concat(nextOffice.officialIndices);
@@ -55,11 +63,12 @@ function getRepresentatives(address) {
         relevantPoliticians.push(results.body.officials[index]);
       });
       // console.log(relevantPoliticians);
-      const Reps = relevantPoliticians.map( person =>{
-        const Rep = new Representative(person);
-        return Rep;
+      const reps = relevantPoliticians.map( person =>{
+        const rep = new Representative(person);
+        return rep;
       });
-      console.log(Reps);
+      return reps;
+      //console.log(reps);
     })
 }
 
