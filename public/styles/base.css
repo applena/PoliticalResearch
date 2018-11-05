@@ -1,7 +1,7 @@
 
 body {
   background-color: white;
-  font-family: 'Fjalla One', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   color: black;
 }
 
@@ -18,6 +18,7 @@ header h1{
   margin-left: .5em;
   font-weight: bolder;
   padding-top: .5em;
+  
 }
 
 
@@ -35,49 +36,82 @@ display: none;
   text-align: center;
   padding-top: .7em;
   font-size: 20px;
+  font-family: 'Fjalla One', sans-serif;
 }
 
 #intro{
   width: 80%;
-  margin: 3em;
+  padding: 1em;
+  margin: 1em;
   text-align: center;
 }
 
-#intro p {
-  margin-top: 1em;
+#intro p:first-of-type{
+  font-size: 1.1em;
 }
+
+#intro p {
+  font-size: .9em;
+}
+.deck{
+  margin-top: 0em;
+}
+
 
 form{
   background-color: rgb(28, 27, 27);
   color: white;
   border:6px solid navy;
-  margin: 2em;
+  margin: 0em 1.5em 1.5em 1.5em;
   font-size: 20px;
   padding-bottom: 2em;
 }
+.deck{
+  display:flex;
+}
+
 
 #zip{
   margin: 1em .5em 0em .5em;
-  font-size: 18px;
+  font-size: 16px;
   text-align: center;
-}
-#zip input{
-  display: flex;
   align-content: center;
   justify-content: center;
-  margin: 1em 0em 3em 7em;
-
-  
+}
+#zip input{
+  margin: 1em 0em 3em 0em;
+  border-top: none;
+  border-right:none;
+  border-left:none;
+  outline-offset: none;
+  outline-style: none;
+  overflow: scroll;
+  background-color: rgb(28, 27, 27);;
+  color: white;
 }
 
 #address{
   margin: 1em .5em 0em .5em;
   font-size: 18px;
   text-align: center;
+  
+}
+
+#address label{
+  display: flex;
+  flex-direction: column;
 }
 
 #address input{
   font-size: 12px;
+  border-top: none;
+  border-right:none;
+  border-left:none;
+  outline-offset: none;
+  outline-style: none;
+  overflow: scroll;
+  background-color: rgb(28, 27, 27);;
+  color: white;
 }
 
 #address button{
@@ -89,10 +123,19 @@ legend{
   font-size: 30px;
   text-align: center;
   margin-top: .3em;
+  font-family: 'Fjalla One', sans-serif;
 }
 
-
-footer ul li{
-  text-decoration: none;
-  color: black;
+footer {
+  background-color: rgb(6, 5, 5);
+  color: white;
+  width: 100%;
+  height: 6em;
+  text-align: center;
 }
+
+footer ul li a{
+  text-align: center;
+  margin-top: 2em;
+}
+
