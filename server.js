@@ -22,6 +22,9 @@ app.get('/', (request, response) => {
   response.render('../views/index.ejs');
 });
 
+app.get('/checkvoter', (request, response)=> {
+  response.render('./pages/checkvoter.ejs');
+});
 
 app.listen(PORT, () => {
   console.log('listening on port ' + PORT);
