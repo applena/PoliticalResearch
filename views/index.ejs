@@ -4,19 +4,24 @@
 <body>
   <%- include ./partials/header.ejs %>
   <main>
-    <section>
+    <div class="page-header">
       <h2>Daphne</h2>
-      <p>Your Personal Political Resource</p>
-    </section>
+    </div>
     <section>
       This is our app and this is what it does.
     </section>
-    <form>
-      <button>GET STARTED</button>
+    <form action="/district" method="POST">
+      <feildset>
+        <legend>Who Are My Representives?</legend>
+        <label for="zip">
+          <input type="text" name="zip" id="zip" value="zip-code">
+        </label>
+        <button>Find My Reps</button>
+      </feildset>
     </form>
   
      
   </main>
-  <%- include ./partials/header.ejs %>
+  <%- include ./partials/footer.ejs %>
 </body>
 </html>
