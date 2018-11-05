@@ -1,0 +1,65 @@
+
+@media only screen and (max-width:600){
+header{
+  display: flex;
+}
+nav ul{
+  display: flex;
+}
+
+nav ul li{
+  align-content: space-around;
+  flex-direction: row;
+  margin: 3em;
+}
+
+.page-header{
+  display:flex; 
+  align-content: center;
+  justify-content: center;
+}
+
+
+
+#intro p{
+  margin: 7.5%;
+  display:flex;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
+}
+
+form{
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+legend{
+  text-align: center;
+  margin: 2em;
+}
+#zip input{
+  margin: 2em;
+  margin-left: 10em;
+}
+
+#address input{
+  margin: 2em;
+  margin-left: 10em;
+}
+input{
+  font-size: 16px;
+}
+
+#address button{
+  
+}
+
+footer{
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: flex-end;
+}
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+ <%- include ./partials/head.ejs %>
+<body>
+  <%- include ./partials/header.ejs %>
+  <main>
+    <div class="page-header">
+      <h2>Find Your Representives</h2>
+    </div>
+    <section id="intro">
+      <p>Democracy works best when everyone participates. The first step in making your voice heard is to know who represents you at a state and national level. </p>
+      <p>Your personal information will only be used to immediately determine your representatives.</p>
+    </section>
+    <section class="deck">
+      <form action="/representatives" method="POST">
+        <feildset>
+          <legend>Who Are My Representives?</legend>
+          <div id="zip" class="card">
+            <p>For your national representives, enter your zip code below</p>
+            <label for="zip">
+                <input type="text" name="zip" value="zip-code" required>
+            </label>
+          </div>
+
+          <div id="address" class="card">
+            <p>For your state representives, enter your address below</p>
+            <label for="address">
+              <input type="text" name="address" id="street-address" value="address">
+              <input type="text" name="address" id="city-state-address" value="city and state">
+            </label>
+            <button>Find My Reps</button>
+          </div>
+        </feildset>
+      </section>
+    </form>
+  
+     
+  </main>
+  <%- include ./partials/footer.ejs %>
+</body>
+</html>
