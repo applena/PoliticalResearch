@@ -28,8 +28,8 @@
             <p>Role: <%= item.role %></p>
             <img src="<%= item.img_url %>" alt="<%= item.name %>" />
             <p>Identifies as: <%= item.political_affiliation %></p>
-            <p>Website: <%= item.website_url %></p>
-            <p>Email: <%= item.email %></p>
+            <p><a target="blank" href="<%= item.website_url %>">Website</a></p>
+            <!-- <p><%= item.email %></p> -->
             <p>Phone: <%= item.phone %></p>
           </a>
 
@@ -53,14 +53,14 @@
             <p>Role: <%= item.role %></p>
             <img src="<%= item.img_url %>" alt="<%= item.name %>" />
             <p>Identifies as: <%= item.political_affiliation %></p>
-            <p>Website: <%= item.website_url %></p>
-            <p>Email: <%= item.email %></p>
+            <p><a target="blank" href="<%= item.website_url %>">Website</a></p>
+            <!-- <p><%= item.email %></p> -->
             <p>Phone: <%= item.phone %></p>
           </a>
 
         </div>
       <% }}) %>
-    </div>
+      </div>
     </section>
 
   </main>
