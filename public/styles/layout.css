@@ -1,4 +1,4 @@
-@media (max-width:600px) {
+@media (min-width:400px) {
 
 nav ul li{
   align-content: space-around;
@@ -14,7 +14,6 @@ nav ul li{
 
 
 #intro p{
-  margin: 7.5%;
   display:flex;
   align-content: center;
   justify-content: center;
@@ -65,7 +64,17 @@ nav ul li{
   margin: 2em;
 }
 
+.card img{
+  width:15em; 
+  margin: 1em;
+}
+
+.card h3{
+  font-size: 24px;
+}
+
 .card1{
+  width: 100%;
   display: flex;    
   justify-content: center;
   align-items: center;
@@ -103,8 +112,127 @@ footer{
 
 
 
-@media (min-width:601px){
 
+
+
+@media (min-width:850px){
+  nav ul li{
+    align-content: space-around;
+    margin: 3em;
+  }
+  
+  .page-header{
+    display:flex; 
+    align-content: center;
+    justify-content: center;
+  }
+  
+  
+  
+  #intro p{
+    display:flex;
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .deck{
+    margin-top: 0em;
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1em;
+  }
+  
+  .deck form{
+    width: 80%;
+    margin: auto;
+    border: 2px solid rgb(28, 27, 27);
+    color: red;
+  }
+  
+  #national-rep .innerdeck {
+    display: flex;
+    flex-direction: column;     
+    justify-content: center;
+    align-items: center;
+    border: 1px solid red;
+    width: 90%;
+  }
+  
+  #state-rep .statedeck{
+    display: flex;
+    flex-direction: column;     
+    justify-content: center;
+    align-items: center;
+    border: 1px solid green;
+    width: 90%;
+  }
+  
+  
+  
+  .card{
+    display:flex;
+    flex-direction: column;     
+    justify-content: center;
+    align-items: center;
+    margin: 2em;
+  }
+
+  .card img{
+      width:27em; 
+      margin: 1em;
+  }
+
+  .card h3{
+    font-size: 34px;
+  }
+  
+  .card1{
+    width: 100%;
+    display: flex;    
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+  
+  form{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+  }
+  
+  legend{
+    text-align: center;
+    margin: 2em;
+  }
+  
+  
+  #address input{
+    margin: 2em;
+    margin-left: 10em;
+  }
+  input{
+    font-size: 16px;
+  }
+  
+  
+  footer{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-end;
+   }
+}
+
+
+
+
+
+
+
+@media (min-width: 1221px){
   nav ul li{
     align-content: space-around;
     margin: 3em;
@@ -116,7 +244,6 @@ footer{
     justify-content: center;
   }
   #intro p{
-    margin: 7.5%;
     display:flex;
     align-content: center;
     justify-content: center;
@@ -148,7 +275,7 @@ footer{
     width: 90%
   }
 
-  #state-rep .statedeck{
+  #state-rep .innerdeck{
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -165,10 +292,17 @@ footer{
     align-items: center;
     margin: 2em;
   }
-  
+  .card img{
+    width:15em; 
+    margin: 1em;
+}
+
+.card h3{
+  font-size: 24px;
+}
   
   .card1{
-    display:flex;    
+    display: flex;    
     justify-content: center;
     align-items: center;
     color: white;

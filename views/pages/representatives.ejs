@@ -41,7 +41,7 @@
     <section id="state-rep" class="deck">
         <legend>State Representatives</legend>
 
-        <div class="statedeck">
+        <div class="innerdeck">
 
       <% value.reps.forEach(item => { %>
         <% if(/State/.test(item.role)){ %>
@@ -57,7 +57,7 @@
             <p>Phone: <%= item.phone %></p>
           </a>
 
-        <div>
+        </div>
       <% }}) %>
       </div>
     </section>
