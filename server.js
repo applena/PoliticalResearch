@@ -4,7 +4,9 @@ const express = require('express');
 const cors = require('cors');
 // const googleapis = require('googleapis');
 const superagent = require('superagent');
-// const pg = require('pg');
+const pg = require('pg');
+const client = new pg.Client(process.env.DATABASE_URL);
+client.connect();
 
 require('dotenv').config();
 const app = express();
@@ -26,9 +28,24 @@ app.get('/checkvoter', (request, response)=> {
   response.render('./pages/checkvoter.ejs');
 });
 
+
+// app.get('/loadrep/:id', (request, response) => {
+//   let {id} = request.params; //params is an object in the request object that stores anything in the url that is followed by a : as a key (in this case, let {id} = request.params is the same as just using request.params.id)
+//   let SQL = `SELECT * FROM reps WHERE id=${id}`; // need to verify the correct table
+//   client.query(SQL, (error, result) =>{
+//     if(!error){
+//       let representative = result.rows[0];
+//       response.render('/pages/individualrep.ejs', {value: representative});
+//     } else{
+//       response.redirect('./pages/error.ejs');
+//     }
+//   })
+// })
+
 app.get('/about', (request, response) =>{
   response.render('./pages/about.ejs');
 })
+
 
 app.listen(PORT, () => {
   console.log('listening on port ' + PORT);
@@ -46,7 +63,6 @@ app.post('/representatives', (request, response) =>{
   // console.log(userAddress);
   getRepresentatives(userAddress)
     .then (results => {
-      //results.render('./representatives');
       response.render('./pages/representatives.ejs', {value: results});
       console.log(results);
     })

@@ -5,7 +5,9 @@
   <%- include ../partials/header.ejs %>
   <main>
     <div class="page-header">
-        <h2>Federal District <%= value.districtPair.federalDistrict %> and State District <%= value.districtPair.stateDistrict %></h2>
+
+        <h2>Your Representives for Federal District <%= value.federalDistrict %> and State District <%= value.stateDistrict %></h2>
+
     </div>
     <section id="intro">
       <div class="card1">
@@ -20,6 +22,7 @@
       <% value.reps.forEach(item => { %>
         <% if(/Federal/.test(item.role)){ %>
         <div class="card">
+
           <h3><%= item.name %></h3>
           <p><%= item.role %></p>
           <img src="<%= item.img_url %>" alt="<%= item.name %>" />
@@ -27,6 +30,17 @@
           <p><a href="<%= item.website_url %>">Website</a></p>
           <!-- <p>Email: <%= item.email %></p> -->
           <p>Phone: <%= item.phone %></p>
+
+          <a href="/loadrep/:id">
+            <h3><%= item.name %></h3>
+            <p>Role: <%= item.role %></p>
+            <img src="<%= item.img_url %>" alt="<%= item.name %>" />
+            <p>Identifies as: <%= item.political_affiliation %></p>
+            <p>Website: <%= item.website_url %></p>
+            <p>Email: <%= item.email %></p>
+            <p>Phone: <%= item.phone %></p>
+          </a>
+
         </div>
      
       <% }}) %>
@@ -41,6 +55,7 @@
       <% value.reps.forEach(item => { %>
         <% if(/State/.test(item.role)){ %>
         <div class="card">
+
           <h3><%= item.name %></h3>
           <p><%= item.role %></p>
           <img src="<%= item.img_url %>" alt="<%= item.name %>" />
@@ -48,6 +63,17 @@
           <p><a href="<%= item.website_url %>">Website</a></p>
           <p> <%= item.email %></p>
           <p>Phone: <%= item.phone %></p>
+
+          <a href="/loadrep/:id">
+            <h3><%= item.name %></h3>
+            <p>Role: <%= item.role %></p>
+            <img src="<%= item.img_url %>" alt="<%= item.name %>" />
+            <p>Identifies as: <%= item.political_affiliation %></p>
+            <p>Website: <%= item.website_url %></p>
+            <p>Email: <%= item.email %></p>
+            <p>Phone: <%= item.phone %></p>
+          </a>
+
         </div>
       <% }}) %>
     </div>
