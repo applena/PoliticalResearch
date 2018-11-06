@@ -5,43 +5,52 @@
   <%- include ../partials/header.ejs %>
   <main>
     <div class="page-header">
-        <h2>Your Representives for Federal District <%= value.districtPair.federalDistrict %> and State District <%= value.districtPair.stateDistrict %></h2>
+        <h2>Federal District <%= value.districtPair.federalDistrict %> and State District <%= value.districtPair.stateDistrict %></h2>
     </div>
     <section id="intro">
-      <div class="card">
-        <p><a href="/checkvoter">Can I Vote?</a></p>
+      <div class="card1">
+        <p><a href="/checkvoter">Am I Registered to Vote?</a></p>
       </div>
     </section>
     <section id="national-rep" class="deck">
-      <legend>National Representatives</legend>
+      <legend >National Representatives</legend>
+
+      <div class="innerdeck">
+
       <% value.reps.forEach(item => { %>
         <% if(/Federal/.test(item.role)){ %>
         <div class="card">
           <h3><%= item.name %></h3>
-          <p>Role: <%= item.role %></p>
+          <p><%= item.role %></p>
           <img src="<%= item.img_url %>" alt="<%= item.name %>" />
           <p>Identifies as: <%= item.political_affiliation %></p>
-          <p>Website: <%= item.website_url %></p>
-          <p>Email: <%= item.email %></p>
+          <p><a href="<%= item.website_url %>">Website</a></p>
+          <!-- <p>Email: <%= item.email %></p> -->
           <p>Phone: <%= item.phone %></p>
         </div>
+     
       <% }}) %>
+    </div>
     </section>
 
     <section id="state-rep" class="deck">
         <legend>State Representatives</legend>
+
+        <div class="innerdeck">
+
       <% value.reps.forEach(item => { %>
         <% if(/State/.test(item.role)){ %>
         <div class="card">
           <h3><%= item.name %></h3>
-          <p>Role: <%= item.role %></p>
+          <p><%= item.role %></p>
           <img src="<%= item.img_url %>" alt="<%= item.name %>" />
           <p>Identifies as: <%= item.political_affiliation %></p>
-          <p>Website: <%= item.website_url %></p>
-          <p>Email: <%= item.email %></p>
+          <p><a href="<%= item.website_url %>">Website</a></p>
+          <p> <%= item.email %></p>
           <p>Phone: <%= item.phone %></p>
         </div>
       <% }}) %>
+    </div>
     </section>
 
   </main>
