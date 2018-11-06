@@ -1,9 +1,9 @@
-DROP TABLE if EXISTS nationalrepresentative;
-DROP TABLE if EXISTS staterepresentative;
-DROP TABLE if EXISTS nationalsenatorone;
-DROP TABLE if EXISTS nationalsenatortwo;
-DROP TABLE if EXISTS statesenatorone;
-DROP TABLE if EXISTS statesenatortwo;
+-- DROP TABLE if EXISTS nationalrepresentative;
+-- DROP TABLE if EXISTS staterepresentative;
+-- DROP TABLE if EXISTS nationalsenatorone;
+-- DROP TABLE if EXISTS nationalsenatortwo;
+-- DROP TABLE if EXISTS statesenatorone;
+-- DROP TABLE if EXISTS statesenatortwo;
 DROP TABLE if EXISTS votingdistricts;
 
 DROP TABLE if EXISTS votinghistory;
@@ -16,6 +16,7 @@ DROP TABLE if EXISTS politicianinfo;
 CREATE TABLE votingdistricts(
     id SERIAL PRIMARY KEY,
     address TEXT,
+    state TEXT,
     voting_district TEXT
 );
 

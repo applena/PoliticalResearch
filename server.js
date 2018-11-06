@@ -133,6 +133,7 @@ function UserDistricts(districts){
 }
 
 UserDistricts.prototype.save = function(address){
+  console.log('address', address);
   let votingDistrict = Object.entries(this)[1][1];
   let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
   client.query(SQL, (error, result) =>{
@@ -141,11 +142,13 @@ UserDistricts.prototype.save = function(address){
     }
     else if(!result.rowCount){
       SQL = `INSERT INTO votingdistricts
-            (address,voting_district)
-            VALUES($1,$2) RETURNING id AS id;`;
-      let values = [address];
+            (address,state,voting_district)
+            VALUES($1,$2,$3);`;
+      let values = [address, address.substring(address.length-2)];
       values.push(Object.entries(this)[1][1]);
       client.query(SQL,values, (error,result) =>{
+        console.log('error', error);
+        console.log('result',result);
         return result.rows[0].id;
       })
     }
