@@ -64,7 +64,7 @@ app.post('/representatives', (request, response) =>{
   getRepresentatives(userAddress)
     .then (results => {
       response.render('./pages/representatives.ejs', {value: results});
-      console.log(results);
+      //console.log(results);
     })
 
 });
@@ -131,8 +131,6 @@ function UserDistricts(districts){
 }
 
 function Representative(data){
-  // console.log('New representative from:');
-  // console.log(data);
   this.name = data.name;
   this.role = data.role;
   if(data.photoUrl){
@@ -169,41 +167,67 @@ function filterRelevantOffices(officeArray){
   });
 }
 
-/*------SAMPLE CODE SNIPPET FROM GOOGLE CIVIC API----------*/
-/**
-   * Sample JavaScript code for civicinfo.representatives.representativeInfoByAddress
-   * See instructions for running APIs Explorer code samples locally:
-   * https://developers.google.com/explorer-help/guides/code_samples#javascript
-**/
+//////////////my test code - get the funding info for the selected rep//////////////
+let chosenID;
 
-//   function loadClient() {
-//     gapi.client.setApiKey(YOUR_API_KEY);
-//     return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/civicinfo/v2/rest")
-//         .then(function() { console.log("GAPI client loaded for API"); },
-//               function(err) { console.error("Error loading GAPI client for API", err); });
-//   }
-//   // Make sure the client is loaded before calling this method.
-//   function execute() {
-//     return gapi.client.civicinfo.representatives.representativeInfoByAddress({
-//       "address": "98109",
-//       "includeOffices": true,
-//       "levels": [
-//         "country",
-//         "administrativeArea1"
-//       ],
-//       "roles": [
-//         "legislatorUpperBody",
-//         "legislatorLowerBody"
-//       ],
-//       "prettyPrint": true
-//     })
-//         .then(function(response) {
-//                 // Handle the results here (response.result has the parsed body).
-//                 console.log("Response", response);
-//               },
-//               function(err) { console.error("Execute error", err); });
-//   }
-//   gapi.load("client");
-// <button onclick="loadClient()">load</button>
-// <button onclick="execute()">execute</button>
-/*------------END SNIPPET----------------*/
+app.get('/loadrep/:id', (request, response) => {
+  chosenID = request.params.id;
+  let SQL = `SELECT state FROM votingdistricts WHERE id=$1`;
+  let values = [chosenID];
+
+  client.query(SQL, values, (error, result) => {
+    let state = result;//this is the state where the selected politician is
+
+    getAllRepsByState(state)
+      .then (starRep => {
+        let repCid = starRep['@attributes'].cid;
+        let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
+        console.log(URL);
+        return superagent.get(URL)
+          .then(result => {
+            let contributors = JSON.parse(result.text);
+            let contributorObjectArray = contributors.response.contributors.contributor;
+            let contributorArray=[]; //this array holds the doners and the totals
+            console.log(contributorObjectArray);
+            for(let i=0; i<contributorObjectArray.length; i++){
+              let contributor = new Contributor(contributorObjectArray[i]);
+              contributorArray.push(contributor);
+            }
+            return contributorArray;
+          })
+      })
+  })
+  // let repNameRoleQuery = 'SELECT politician role FROM politicianinfo WHERE id=$1';
+  // let repValues = [chosenID];
+  // client.query(repNameRoleQuery, repValues, (error, results) => {
+  //   let repNameRole = results;
+  //   return repNameRole;
+  // })
+  response.render('.pages/individualrep.ejs', {value: {name: name, political_affiliation: political_affiliation, role: role}, vote: contributorArray})//this is what I need to feed into my ejs page
+
+})
+
+function Contributor(data) {
+  this.name = data['@attributes'].org_name;
+  this.total = data['@attributes'].total;
+}
+
+function getAllRepsByState(state) {
+  let URL = `http://www.opensecrets.org/api/?method=getLegislators&id=${state}&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
+  return superagent.get(URL)
+    .then(results =>{
+      const reps = JSON.parse(results.text);
+      return chosenRepresentative(reps);
+    })
+}
+
+function chosenRepresentative(obj) {
+  let SQL = 'SELECT politician FROM politicianinfo WHERE id=$1';
+  let values = [chosenID];
+  client.query(SQL, values, (error, results) => {
+    const starRep = obj.response.legislator.find(rep => {
+      return rep['@attributes'].firstlast===results;
+    })
+    return starRep;
+  })
+}
