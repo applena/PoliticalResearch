@@ -81,6 +81,10 @@ display: none;
   text-align: center;
 }
 
+.deck form fieldset{
+  width: 100%;
+  overflow: scroll;
+}
 
 
 /*----------  Decks --------*/

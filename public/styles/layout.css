@@ -38,9 +38,9 @@ nav ul li{
   margin: auto;
   border: 2px solid rgb(28, 27, 27);
   color: red;
-  /* display: flex; 
-  align-items: center;
-  justify-content: center; */
+  display: flex; 
+  flex-direction: column;
+
 }
 
 .deck form fieldset{
@@ -170,9 +170,8 @@ footer{
     margin: auto;
     border: 2px solid rgb(28, 27, 27);
     color: red;
-    /* display: flex; 
-    align-content: center;
-    justify-content: center; */
+     display: flex; 
+    flex-direction: column;
   }
 
   .deck form fieldset{
@@ -303,6 +302,8 @@ footer{
     margin: auto;
     border: 2px solid rgb(28, 27, 27);
     color: red;
+    display: flex;
+    flex-direction: column;
   }
 
   
