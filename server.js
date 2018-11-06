@@ -5,10 +5,10 @@ const cors = require('cors');
 // const googleapis = require('googleapis');
 const superagent = require('superagent');
 const pg = require('pg');
+require('dotenv').config();
 const client = new pg.Client(process.env.DATABASE_URL);
 client.connect();
 
-require('dotenv').config();
 const app = express();
 
 app.use(cors());
@@ -64,7 +64,7 @@ app.post('/representatives', (request, response) =>{
   getRepresentatives(userAddress)
     .then (results => {
       response.render('./pages/representatives.ejs', {value: results});
-      console.log(results);
+      // console.log(results);
     })
 
 });
@@ -92,6 +92,7 @@ function getRepresentatives(address) {
         }
       })
       let districtPair = new UserDistricts(districtArray);
+      let districtIndex = districtPair.save(address);
       let relevantIndicesAndRoles = [];
       for(let index = 0; index < relevantOffices.length; index++){
         let roleName = '';
@@ -118,9 +119,10 @@ function getRepresentatives(address) {
       });
       const reps = relevantPoliticians.map( person =>{
         const rep = new Representative(person);
+        // rep.save(districtIndex);
         return rep;
       });
-      console.log({'reps': reps, 'districtPair': districtPair})
+      // console.log({'reps': reps, 'districtPair': districtPair})
       return {'reps': reps, 'districtPair': districtPair};
     })
 }
@@ -128,6 +130,34 @@ function getRepresentatives(address) {
 function UserDistricts(districts){
   this.federalDistrict = districts[0];
   this.stateDistrict = districts[1];
+}
+
+UserDistricts.prototype.save = function(address){
+  console.log('address', address);
+  let votingDistrict = Object.entries(this)[1][1];
+  let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
+  client.query(SQL, (error, result) =>{
+    if(error){
+      console.log(error);
+    }
+    else if(!result.rowCount){
+      SQL = `INSERT INTO votingdistricts
+            (address,state,voting_district)
+            VALUES($1,$2,$3);`;
+      let values = [address, address.substring(address.length-2)];
+      values.push(Object.entries(this)[1][1]);
+      client.query(SQL,values, (error,result) =>{
+        console.log('error', error);
+        console.log('result',result);
+        return result.rows[0].id;
+      })
+    }
+    else{
+      console.log('voting district found, ID:');
+      console.log(result.rows[0].id);
+      return result.rows[0].id;
+    }
+  });
 }
 
 function Representative(data){
@@ -162,6 +192,14 @@ function Representative(data){
     this.website_url = 'No website URL found.';
   }
 }
+
+// Representative.prototype.save = function(){
+//   let SQL = `INSERT INTO locations
+//     (search_query,formatted_query,latitude,longitude)
+//     VALUES($1,$2,$3,$4)`;
+//   let values = Object.values(this);
+//   client.query(SQL,values);
+// }
 
 function filterRelevantOffices(officeArray){
   return officeArray.filter( office =>{
