@@ -31,7 +31,7 @@ app.listen(PORT, () => {
 });
 
 app.post('/representatives', (request, response) =>{
-  console.log(request.body);
+  // console.log(request.body);
   let userAddress = '';
   if(request.body.address){
     userAddress = request.body.address.join('%20').split(' ').join('%20');
@@ -39,7 +39,7 @@ app.post('/representatives', (request, response) =>{
   else{
     userAddress = request.body.zip.split(' ').join('%20');
   }
-  console.log(userAddress);
+  // console.log(userAddress);
   getRepresentatives(userAddress)
     .then (results => {
       //results.render('./representatives');
@@ -50,34 +50,71 @@ app.post('/representatives', (request, response) =>{
 });
 
 function getRepresentatives(address) {
-  console.log('in loadClient');
+  // console.log('in loadClient');
   let URL = `https://www.googleapis.com/civicinfo/v2/representatives?key=${process.env.GOOGLE_CIVIC_API_KEY}&address=${address}`
-  console.log(URL);
-
+  // console.log(URL);
   return superagent.get(URL)
     .then(results =>{
       //console.log(results);
       let relevantOffices = filterRelevantOffices(results.body.offices);
-      let relevantIndices = relevantOffices.reduce( (acc, nextOffice) =>{
-        return acc.concat(nextOffice.officialIndices);
-      }, [])
+      let districtArray = ['',''];
+      relevantOffices.forEach(office =>{
+        if(/United States House/.test(office.name)){
+          districtArray[0] = office.name.substring(office.name.length-5);
+        }
+        if(/State /.test(office.name)){
+          let stateDistrictArray = office.name.split(' ');
+          let concatArray = [];
+          concatArray.push(stateDistrictArray[0]); //state name
+          concatArray.push(stateDistrictArray[stateDistrictArray.length-2]);//'District'
+          concatArray.push(stateDistrictArray[stateDistrictArray.length-1]);//district #
+          districtArray[1] = concatArray.join(' ');
+        }
+      })
+      let districtPair = new UserDistricts(districtArray);
+      let relevantIndicesAndRoles = [];
+      for(let index = 0; index < relevantOffices.length; index++){
+        let roleName = '';
+        if(/country/.test(relevantOffices[index].levels[0])){
+          roleName += 'Federal ';
+        }
+        else{
+          roleName += 'State ';
+        }
+        if(/legislatorUpperBody/.test(relevantOffices[index].roles[0])){
+          roleName += 'Senator';
+        }
+        else{
+          roleName += 'Representative';
+        }
+        relevantOffices[index].officialIndices.forEach(index =>{
+          relevantIndicesAndRoles.push({'role': roleName, 'index': index})
+        })
+      }
       let relevantPoliticians = [];
-      relevantIndices.forEach( index =>{
-        relevantPoliticians.push(results.body.officials[index]);
+      relevantIndicesAndRoles.forEach( indexPair =>{
+        relevantPoliticians.push(results.body.officials[indexPair.index]);
+        relevantPoliticians[relevantPoliticians.length-1].role = indexPair.role;
       });
-      // console.log(relevantPoliticians);
       const reps = relevantPoliticians.map( person =>{
         const rep = new Representative(person);
         return rep;
       });
-      return reps;
-      //console.log(reps);
+      console.log({'reps': reps, 'districtPair': districtPair})
+      return {'reps': reps, 'districtPair': districtPair};
     })
 }
 
+function UserDistricts(districts){
+  this.federalDistrict = districts[0];
+  this.stateDistrict = districts[1];
+}
+
 function Representative(data){
-  console.log('Creating new Representative');
+  // console.log('New representative from:');
+  // console.log(data);
   this.name = data.name;
+  this.role = data.role;
   if(data.photoUrl){
     this.img_url = data.photoUrl;
   }
@@ -104,7 +141,6 @@ function Representative(data){
   else{
     this.website_url = 'No website URL found.';
   }
-  console.log('Done creating new Representative');
 }
 
 function filterRelevantOffices(officeArray){
