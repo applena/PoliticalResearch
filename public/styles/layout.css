@@ -1,4 +1,8 @@
 @media (min-width:400px) {
+  /* body{
+   background-image: url(flag.jpg);
+   background-repeat: repeat; 
+  } */
 
 nav ul li{
   align-content: space-around;
@@ -30,10 +34,23 @@ nav ul li{
 }
 
 .deck form{
-  width: 80%;
+  width: 100%;
   margin: auto;
   border: 2px solid rgb(28, 27, 27);
   color: red;
+  /* display: flex; 
+  align-items: center;
+  justify-content: center; */
+}
+
+.deck form fieldset{
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+}
+
+.deck form p{
+  font-size: 30px;
 }
 
 #national-rep .innerdeck {
@@ -93,10 +110,13 @@ legend{
 }
 
 
-#address input{
-  margin: 2em;
-  margin-left: 10em;
+#address {
+text-align: center;
+width: 80%;
+margin: auto;
 }
+
+
 input{
   font-size: 16px;
 }
@@ -115,7 +135,7 @@ footer{
 
 
 
-@media (min-width:850px){
+@media (min-width:775px){
   nav ul li{
     align-content: space-around;
     margin: 3em;
@@ -150,6 +170,15 @@ footer{
     margin: auto;
     border: 2px solid rgb(28, 27, 27);
     color: red;
+    /* display: flex; 
+    align-content: center;
+    justify-content: center; */
+  }
+
+  .deck form fieldset{
+    display: flex; 
+    align-items: center;
+    justify-content: center;
   }
   
   #national-rep .innerdeck {
@@ -207,12 +236,22 @@ footer{
     text-align: center;
     margin: 2em;
   }
-  
-  
-  #address input{
-    margin: 2em;
-    margin-left: 10em;
+  fieldset legend #address{
+    /* margin-left: 10em; */
+    display:flex;
+    justify-content: center;
+    align-content: center;
+    background-color:pink;
   }
+  
+  #address{
+    text-align:center;
+    width: 80%;
+    margin: auto;
+  }
+
+
+
   input{
     font-size: 16px;
   }
@@ -265,6 +304,8 @@ footer{
     border: 2px solid rgb(28, 27, 27);
     color: red;
   }
+
+  
   
   #national-rep .innerdeck{
     display: flex;
@@ -284,6 +325,11 @@ footer{
     width: 90%
   }
 
+  #address {
+    text-align: center;
+    width: 80%;
+    margin: auto;
+  }
 
   .card{
     display:flex;
@@ -318,11 +364,6 @@ footer{
   legend{
     text-align: center;
     margin: 2em;
-  }
-  
-  #address input{
-    margin: 2em;
-    margin-left: 10em;
   }
 
   input{

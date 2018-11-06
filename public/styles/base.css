@@ -11,16 +11,18 @@ body {
   background-color: linear-gradient(rgba(0,0,0,0.05),rgba(0,0,0,0));
 }
 /*---------   header    -------------*/
+
+
 header {
   background-color: rgb(28, 27, 27);
   color: whitesmoke;
-  height: 8em;
+  height: 11em;
   text-align: center;
   display: block;
 }
 
 header h1{
-  font-size: 3.5em;
+  font-size: 5em;
   font-weight: bolder;
   padding-top: .5em;
   width: 80%;
@@ -50,11 +52,14 @@ display: none;
 /*-------     intro     ---------*/
 
 #intro{
-  width: 100%;
   padding: 1em;
-  margin: 1em;
+  margin: 2.5em;
+  display: flex;
+  align-content: center;
+  justify-content: center;
   text-align: center;
   color: black;
+  font-size: 24px;
 }
 
 #intro p:first-of-type{
@@ -114,9 +119,14 @@ display: none;
 
 /*--------------------------*/
 
-form{
-  background-color:black;
+form legend{
+  background-color: rgb(28, 27, 27);
   color: white;
+}
+
+form{
+  background-color: white;
+  color: black;
   margin: 0em 1.5em 1.5em 1.5em;
   font-size: 20px;
   padding-bottom: 2em;
@@ -125,7 +135,7 @@ form{
 
 
 #zip{
-  margin: 1em .5em 0em .5em;
+  /* margin: 1em .5em 0em .5em; */
   font-size: 16px;
   text-align: center;
   align-content: center;
@@ -145,13 +155,7 @@ form{
 }
 
 #address{
-  margin: 1em .5em 0em .5em;
-  font-size: 18px;
-  text-align: center;
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  
+  font-size: 18px; 
 }
 
 #address label{
@@ -175,8 +179,10 @@ form{
 }
 
 #address button{
-  background-color: white;
+  background-color: black;
+  color: white;
   margin-top: 2em;
+  width: 200px;
 }
 
 legend{
