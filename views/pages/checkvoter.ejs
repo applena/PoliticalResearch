@@ -6,6 +6,8 @@
   <main>
     <div class="page-header">
       <h2>Check Your Voting Status</h2>
+      <p>For federal voting, you are in district <%= value.results.federalDistrict %></p>
+      <p>For state voting, you are in district <%= value.results.stateDistrict %></p>
     </div>
     <section id="intro">
       <p>The first step to making your voice heard is to make sure you are registered to vote.</p>
@@ -14,12 +16,10 @@
     <section class="deck">
       <form action= method="POST">
         <fieldset class="card">
-          <legend>Check to see if you are registered to vote</legend>
             <iframe src="https://verify.vote.org/?partner=111111&campaign=free-tools" width="100%" marginheight="0" frameborder="0" id="frame3" scrollable="no"></iframe><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.min.js" ></script><script type="text/javascript">iFrameResize({ log:true, checkOrigin:false});</script>
         </fieldset>
 
         <feildset class="card">
-          <legend>Register to Vote</legend>
           <iframe src="https://register.vote.org/?partner=111111&campaign=free-tools" width="100%" marginheight="0" frameborder="0" id="frame1" scrollable ="no"></iframe><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.min.js"></script><script type="text/javascript">iFrameResize({ log:true, checkOrigin:false});</script>
         </feildset>
       </section>
