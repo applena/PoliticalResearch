@@ -26,6 +26,10 @@ app.get('/checkvoter', (request, response)=> {
   response.render('./pages/checkvoter.ejs');
 });
 
+app.get('/about', (request, response) =>{
+  response.render('./pages/about.ejs');
+})
+
 app.listen(PORT, () => {
   console.log('listening on port ' + PORT);
 });

@@ -13,8 +13,9 @@
       </div>
     </section>
     <section id="national-rep" class="deck">
-      <legend>National Representives</legend>
+      <legend>National Representatives</legend>
       <% value.reps.forEach(item => { %>
+        <% if(/Federal/.test(item.role)){ %>
         <div class="card">
           <h3><%= item.name %></h3>
           <p>Role: <%= item.role %></p>
@@ -24,12 +25,13 @@
           <p>Email: <%= item.email %></p>
           <p>Phone: <%= item.phone %></p>
         </div>
-      <% }) %>
+      <% }}) %>
     </section>
 
     <section id="state-rep" class="deck">
-        <legend>State Representives</legend>
+        <legend>State Representatives</legend>
       <% value.reps.forEach(item => { %>
+        <% if(/State/.test(item.role)){ %>
         <div class="card">
           <h3><%= item.name %></h3>
           <p>Role: <%= item.role %></p>
@@ -39,7 +41,7 @@
           <p>Email: <%= item.email %></p>
           <p>Phone: <%= item.phone %></p>
         </div>
-      <% }) %>
+      <% }}) %>
     </section>
 
   </main>
