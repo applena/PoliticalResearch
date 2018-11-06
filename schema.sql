@@ -13,6 +13,7 @@ DROP TABLE if EXISTS candidatedata;
 DROP TABLE if EXISTS issuemap;
 DROP TABLE if EXISTS politicianinfo;
 
+
 CREATE TABLE votingdistricts(
     id SERIAL PRIMARY KEY,
     address TEXT,
@@ -50,14 +51,17 @@ CREATE TABLE votingdistricts(
 --     politician TEXT
 -- );
 
--- CREATE TABLE politicianinfo(
---     politician TEXT,
---     affiliation TEXT,
---     contact_phone TEXT,
---     contact_address TEXT,
---     reelection_date DATE,
---     UNIQUE (politician)
--- );
+CREATE TABLE politicianinfo(
+   voting_district_id INT NOT NULL REFERENCES votingdistricts(id),
+   politician TEXT,
+   role TEXT,
+   image_url TEXT,
+   affiliation TEXT,
+   contact_phone TEXT,
+   contact_address TEXT,
+   website TEXT
+   -- reelection_date DATE,
+);
 
 -- CREATE TABLE issuemap(
 --     issue_type INT,

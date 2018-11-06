@@ -8,8 +8,22 @@
         <h2><%= value.name %></h2>
     </div>
     <img src="<%= value.image_url %>" alt="<%= value.name %>" />
-    <p><%= value.name %></p>
-    <p><%= value.role %></p>
+    <p>Name: <%= value.name %></p>
+    <p>Political Affiliation: <%= value.political_affiliation %></p>
+    <p>Role: <%= value.role %></p>
+    <div class="deck" id="voting-history">
+      <p>Recent Voting History:</p>
+      <% value.vote.forEach(vote => { %>
+        <h3><%= vote.name %></h3>
+        <p><%= vote.result%></p>
+      <% }) %>
+    </div>
+    <div class="deck" id="funding">
+      <p>Sources of Funding: chart.js here? </p>
+    </div>
+    <div id="funding-chart">
+        <canvas id="fundingChart"></canvas>
+    </div>
   </main>
   <%- include ../partials/footer.ejs %>
 </body>
