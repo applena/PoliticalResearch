@@ -251,7 +251,7 @@ let chosenID;
 app.get('/loadrep/:id', (request, response) => {
   chosenID = request.params.id;
   console.log(chosenID);
-  let SQL = `SELECT state FROM votingdistricts WHERE id=$1`;
+  let SQL = `SELECT state FROM politicianinfo WHERE id=$1`;
   let values = [chosenID];
 
   client.query(SQL, values, (error, result) => {
