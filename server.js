@@ -120,9 +120,11 @@ function getRepresentatives(address) {
         const rep = new Representative(person);
         return rep;
       });
-      saveDistrictandReps(address,districtPair.stateDistrict,reps);
-      // console.log({'reps': reps, 'districtPair': districtPair})
-      return {'reps': reps, 'districtPair': districtPair};
+      saveDistrictandReps(address,districtPair.stateDistrict,reps)
+        .then(myReps => {
+          // console.log({'reps': reps, 'districtPair': districtPair})
+          return {'reps': myReps, 'districtPair': districtPair};
+        })
     })
 }
 
@@ -244,6 +246,76 @@ function filterRelevantOffices(officeArray){
     return (/country/.test(office.levels) || /administrativeArea1/.test(office.levels)) && (/legislatorUpperBody/.test(office.roles) || /legislatorLowerBody/.test(office.roles));
   });
 }
+
+
+//////////////my test code - get the funding info for the selected rep//////////////
+let chosenID;
+
+app.get('/loadrep/:id', (request, response) => {
+  chosenID = request.params.id;
+  console.log(chosenID);
+  let SQL = `SELECT state FROM votingdistricts WHERE id=$1`;
+  let values = [chosenID];
+
+  client.query(SQL, values, (error, result) => {
+    let state = result;//this is the state where the selected politician is
+
+    getAllRepsByState(state)
+      .then (starRep => {
+        let repCid = starRep['@attributes'].cid;
+        let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
+        console.log(URL);
+        return superagent.get(URL)
+          .then(result => {
+            let contributors = JSON.parse(result.text);
+            let contributorObjectArray = contributors.response.contributors.contributor;
+            let contributorArray=[]; //this array holds the doners and the totals
+            //console.log(contributorObjectArray);
+            for(let i=0; i<contributorObjectArray.length; i++){
+              let contributor = new Contributor(contributorObjectArray[i]);
+              contributorArray.push(contributor);
+            }
+            //console.log(contributorArray);
+          })
+      })
+  })
+  // let repNameRoleQuery = 'SELECT politician role FROM politicianinfo WHERE id=$1';
+  // let repValues = [chosenID];
+  // client.query(repNameRoleQuery, repValues, (error, results) => {
+  //   let repNameRole = results;
+  //   return repNameRole;
+  // })
+  console.log("hi");
+  response.render('.pages/individualrep.ejs')
+  //{value: {name: name, political_affiliation: political_affiliation, role: role}, vote: contributorArray})//this is what I need to feed into my ejs page
+
+})
+
+function Contributor(data) {
+  this.name = data['@attributes'].org_name;
+  this.total = data['@attributes'].total;
+}
+
+function getAllRepsByState(state) {
+  let URL = `http://www.opensecrets.org/api/?method=getLegislators&id=${state}&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
+  return superagent.get(URL)
+    .then(results =>{
+      const reps = JSON.parse(results.text);
+      return chosenRepresentative(reps);
+    })
+}
+
+function chosenRepresentative(obj) {
+  let SQL = 'SELECT politician FROM politicianinfo WHERE id=$1';
+  let values = [chosenID];
+  client.query(SQL, values, (error, results) => {
+    const starRep = obj.response.legislator.find(rep => {
+      return rep['@attributes'].firstlast===results;
+    })
+    return starRep;
+  })
+}
+
 
 /*------SAMPLE CODE SNIPPET FROM GOOGLE CIVIC API----------*/
 /**
