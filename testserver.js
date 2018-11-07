@@ -63,8 +63,8 @@ app.post('/representatives', (request, response) =>{
   // console.log(userAddress);
   getRepresentatives(userAddress)
     .then (results => {
+      console.log(results);
       response.render('./pages/representatives.ejs', {value: results});
-      //console.log(results);
     })
 
 });
@@ -120,7 +120,7 @@ function getRepresentatives(address) {
         const rep = new Representative(person);
         return rep;
       });
-      console.log({'reps': reps, 'districtPair': districtPair})
+      //console.log({'reps': reps, 'districtPair': districtPair})
       return {'reps': reps, 'districtPair': districtPair};
     })
 }
@@ -172,6 +172,7 @@ let chosenID;
 
 app.get('/loadrep/:id', (request, response) => {
   chosenID = request.params.id;
+  console.log(chosenID);
   let SQL = `SELECT state FROM votingdistricts WHERE id=$1`;
   let values = [chosenID];
 
@@ -188,12 +189,12 @@ app.get('/loadrep/:id', (request, response) => {
             let contributors = JSON.parse(result.text);
             let contributorObjectArray = contributors.response.contributors.contributor;
             let contributorArray=[]; //this array holds the doners and the totals
-            console.log(contributorObjectArray);
+            //console.log(contributorObjectArray);
             for(let i=0; i<contributorObjectArray.length; i++){
               let contributor = new Contributor(contributorObjectArray[i]);
               contributorArray.push(contributor);
             }
-            return contributorArray;
+            //console.log(contributorArray);
           })
       })
   })
@@ -203,7 +204,9 @@ app.get('/loadrep/:id', (request, response) => {
   //   let repNameRole = results;
   //   return repNameRole;
   // })
-  response.render('.pages/individualrep.ejs', {value: {name: name, political_affiliation: political_affiliation, role: role}, vote: contributorArray})//this is what I need to feed into my ejs page
+  console.log("hi");
+  response.render('.pages/individualrep.ejs')
+  //{value: {name: name, political_affiliation: political_affiliation, role: role}, vote: contributorArray})//this is what I need to feed into my ejs page
 
 })
 
