@@ -138,6 +138,9 @@ footer{
 
 
 @media (min-width:775px){
+  
+
+  
   nav ul li{
     align-content: space-around;
     margin: 3em;
@@ -273,6 +276,10 @@ footer{
 
 
 @media (min-width: 1221px){
+  header{
+    font-size: 1.8em;
+  }
+  
   nav ul li{
     align-content: space-around;
     margin: 3em;
@@ -308,7 +315,9 @@ footer{
     flex-direction: column;
   }
 
-  
+  .deck legend{
+    width:100%;
+  }
   
   #national-rep .innerdeck{
     display: flex;
