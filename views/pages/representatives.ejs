@@ -6,7 +6,7 @@
   <main>
     <div class="page-header">
 
-        <h2>Your Representives for Federal District <%= value.districtPair.federalDistrict %> and State District <%= value.districtPair.stateDistrict %></h2>
+        <h2>Your District is <%= value[0].stateDistrict %></h2>
 
     </div>
     <section id="intro">
@@ -19,21 +19,20 @@
 
       <div class="innerdeck">
 
-      <% value.reps.forEach(item => { %>
+      <% value.forEach(item => { %>
         <% if(/Federal/.test(item.role)){ %>
-        <div class="card">
+          <div class="card">
 
-          <a href="/loadrep/<%= item.id %>"</a>
-            <h3><%= item.name %></h3>
-            <p>Role: <%= item.role %></p>
-            <img src="<%= item.img_url %>" alt="<%= item.name %>" />
-            <p>Identifies as: <%= item.political_affiliation %></p>
-            <p><a target="blank" href="<%= item.website_url %>">Website</a></p>
-            <!-- <p><%= item.email %></p> -->
-            <p>Phone: <%= item.phone %></p>
-          </a>
-
-        </div>
+              <a href="/loadrep/<%=item.id%>">
+                <h3><%= item.politician %></h3>
+                <p>Role: <%= item.role %></p>
+                <img src="<%= item.image_url %>" alt="<%= item.politician %>" />
+                <p>Identifies as: <%= item.affiliation %></p>
+                <p><a target="blank" href="<%= item.website %>">Website</a></p>
+                <p>Phone: <%= item.contact_phone %></p>
+              </a>
+    
+            </div>
      
       <% }}) %>
     </div>
@@ -44,18 +43,17 @@
 
         <div class="innerdeck">
 
-      <% value.reps.forEach(item => { %>
+      <% value.forEach(item => { %>
         <% if(/State/.test(item.role)){ %>
         <div class="card">
 
-          <a href="/loadrep/:id">
-            <h3><%= item.name %></h3>
+          <a href="/loadrep/<%=item.id%>">
+            <h3><%= item.politician %></h3>
             <p>Role: <%= item.role %></p>
-            <img src="<%= item.img_url %>" alt="<%= item.name %>" />
-            <p>Identifies as: <%= item.political_affiliation %></p>
-            <p><a target="blank" href="<%= item.website_url %>">Website</a></p>
-            <!-- <p><%= item.email %></p> -->
-            <p>Phone: <%= item.phone %></p>
+            <img src="<%= item.image_url %>" alt="<%= item.politician %>" />
+            <p>Identifies as: <%= item.affiliation %></p>
+            <p><a target="blank" href="<%= item.website %>">Website</a></p>
+            <p>Phone: <%= item.contact_phone %></p>
           </a>
 
         </div>
