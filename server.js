@@ -92,7 +92,6 @@ function getRepresentatives(address) {
         }
       })
       let districtPair = new UserDistricts(districtArray);
-      let districtIndex = districtPair.save(address);
       let relevantIndicesAndRoles = [];
       for(let index = 0; index < relevantOffices.length; index++){
         let roleName = '';
@@ -119,9 +118,9 @@ function getRepresentatives(address) {
       });
       const reps = relevantPoliticians.map( person =>{
         const rep = new Representative(person);
-        // rep.save(districtIndex);
         return rep;
       });
+      saveDistrictandReps(address,districtPair.stateDistrict,reps);
       // console.log({'reps': reps, 'districtPair': districtPair})
       return {'reps': reps, 'districtPair': districtPair};
     })
@@ -193,13 +192,49 @@ function Representative(data){
   }
 }
 
-// Representative.prototype.save = function(){
-//   let SQL = `INSERT INTO locations
-//     (search_query,formatted_query,latitude,longitude)
-//     VALUES($1,$2,$3,$4)`;
-//   let values = Object.values(this);
-//   client.query(SQL,values);
-// }
+Representative.prototype.save = function(id){
+  console.log('in rep.save()');
+  let SQL = `INSERT INTO politicianinfo
+    (politician,role,image_url,affiliation,contact_phone,contact_address,website,voting_district_id)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8)`;
+  let values = Object.values(this);
+  values.push(id);
+  console.log(SQL, values);
+  client.query(SQL,values);
+}
+
+function saveDistrictandReps(address, district, representatives){
+  console.log('address:',address);
+  console.log('district:',district);
+  console.log('representatives:',representatives);
+  let votingDistrict = district;
+  let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
+  client.query(SQL, (error, result) =>{
+    if(error){
+      console.log(error);
+    }
+    else if(!result.rowCount){
+      console.log(result.rows);
+      SQL = `INSERT INTO votingdistricts
+            (address,state,voting_district)
+            VALUES($1,$2,$3) RETURNING id;`;
+      let values = [address, address.substring(address.length-2)];
+      values.push(votingDistrict);
+      client.query(SQL,values, (error,result) =>{
+        console.log('error', error);
+        console.log('result',result);
+        representatives.forEach(rep =>{
+          rep.save(result.rows[0].id)
+        })
+      })
+    }
+    else{
+      console.log('voting district found, ID:');
+      console.log(result.rows[0].id);
+      return result.rows[0].id;
+    }
+  });
+}
 
 function filterRelevantOffices(officeArray){
   return officeArray.filter( office =>{
