@@ -122,6 +122,11 @@ display: none;
   font-size: 1.2em;
 }
 
+
+#imgcard{
+  width:20em; 
+  margin: 1em;
+}
 /*--------------------------*/
 
 form legend{
