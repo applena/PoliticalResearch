@@ -52,7 +52,7 @@ app.listen(PORT, () => {
 });
 
 app.post('/representatives', (request, response) =>{
-  // console.log(request.body);
+  //console.log(request.body);
   let userAddress = '';
   if(request.body.address){
     userAddress = request.body.address.join('%20').split(' ').join('%20');
@@ -60,11 +60,18 @@ app.post('/representatives', (request, response) =>{
   else{
     userAddress = request.body.zip.split(' ').join('%20');
   }
-  // console.log(userAddress);
+  console.log(userAddress);
   getRepresentatives(userAddress)
     .then (results => {
-      response.render('./pages/representatives.ejs', {value: results});
-      // console.log(results);
+      //console.log(results);
+      let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
+      let resultValues = [results.districtPair.stateDistrict];
+      client.query(getResults, resultValues, (error, result)=> {
+        //console.log(result);
+        //console.log(error);
+        response.render('./pages/representatives.ejs', {value: result.rows});
+        //console.log(result.rows);
+      })
     })
 
 });
@@ -121,10 +128,8 @@ function getRepresentatives(address) {
         return rep;
       });
       saveDistrictandReps(address,districtPair.stateDistrict,reps)
-        .then(myReps => {
-          // console.log({'reps': reps, 'districtPair': districtPair})
-          return {'reps': myReps, 'districtPair': districtPair};
-        })
+      //console.log({'reps': reps, 'districtPair': districtPair})
+      return {'reps': reps, 'districtPair': districtPair};
     })
 }
 
@@ -134,7 +139,7 @@ function UserDistricts(districts){
 }
 
 UserDistricts.prototype.save = function(address){
-  console.log('address', address);
+  //console.log('address', address);
   let votingDistrict = Object.entries(this)[1][1];
   let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
   client.query(SQL, (error, result) =>{
@@ -149,13 +154,13 @@ UserDistricts.prototype.save = function(address){
       values.push(Object.entries(this)[1][1]);
       client.query(SQL,values, (error,result) =>{
         console.log('error', error);
-        console.log('result',result);
+        //console.log('result',result);
         return result.rows[0].id;
       })
     }
     else{
-      console.log('voting district found, ID:');
-      console.log(result.rows[0].id);
+      //console.log('voting district found, ID:');
+      //console.log(result.rows[0].id);
       return result.rows[0].id;
     }
   });
@@ -195,8 +200,8 @@ function Representative(data){
 }
 
 Representative.prototype.save = function(id, stateAbbreviation, votingDistrict){
-  console.log('in rep.save()');
-  console.log(stateAbbreviation,votingDistrict);
+  //console.log('in rep.save()');
+  //console.log(stateAbbreviation,votingDistrict);
   let SQL = `INSERT INTO politicianinfo
     (politician,role,image_url,affiliation,contact_phone,contact_address,website,voting_district_id,state,voting_district)
     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING politician;`;
@@ -204,14 +209,14 @@ Representative.prototype.save = function(id, stateAbbreviation, votingDistrict){
   values.push(id);
   values.push(stateAbbreviation);
   values.push(votingDistrict);
-  console.log(SQL, values);
+  //console.log(SQL, values);
   client.query(SQL,values);
 }
 
 function saveDistrictandReps(address, district, representatives){
-  console.log('address:',address);
-  console.log('district:',district);
-  console.log('representatives:',representatives);
+  // console.log('address:',address);
+  // console.log('district:',district);
+  // console.log('representatives:',representatives);
   let votingDistrict = district;
   let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
   client.query(SQL, (error, result) =>{
@@ -219,7 +224,7 @@ function saveDistrictandReps(address, district, representatives){
       console.log(error);
     }
     else if(!result.rowCount){
-      console.log(result.rows);
+      //console.log(result.rows);
       SQL = `INSERT INTO votingdistricts
             (address,state,voting_district)
             VALUES($1,$2,$3) RETURNING id;`;
@@ -227,15 +232,15 @@ function saveDistrictandReps(address, district, representatives){
       values.push(votingDistrict);
       client.query(SQL,values, (error,result) =>{
         console.log('error', error);
-        console.log('result',result);
+        //console.log('result',result);
         representatives.forEach(rep =>{
           rep.save(result.rows[0].id, values[1], values[2])
         })
       })
     }
     else{
-      console.log('voting district found, ID:');
-      console.log(result.rows[0].id);
+      //console.log('voting district found, ID:');
+      //console.log(result.rows[0].id);
       return result.rows[0].id;
     }
   });
