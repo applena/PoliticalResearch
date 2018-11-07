@@ -193,7 +193,7 @@ app.get('/loadrep/:id', (request, response) => {
               let contributor = new Contributor(contributorObjectArray[i]);
               contributorArray.push(contributor);
             }
-            return contributorArray;
+            console.log(contributorArray);
           })
       })
   })
@@ -203,7 +203,8 @@ app.get('/loadrep/:id', (request, response) => {
   //   let repNameRole = results;
   //   return repNameRole;
   // })
-  response.render('.pages/individualrep.ejs', {value: {name: name, political_affiliation: political_affiliation, role: role}, vote: contributorArray})//this is what I need to feed into my ejs page
+  response.render('.pages/individualrep.ejs')
+  //{value: {name: name, political_affiliation: political_affiliation, role: role}, vote: contributorArray})//this is what I need to feed into my ejs page
 
 })
 
