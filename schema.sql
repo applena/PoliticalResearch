@@ -53,6 +53,7 @@ CREATE TABLE votingdistricts(
 
 CREATE TABLE politicianinfo(
    voting_district_id INT NOT NULL REFERENCES votingdistricts(id),
+   internal_id SERIAL,
    politician TEXT,
    role TEXT,
    image_url TEXT,
