@@ -21,45 +21,19 @@ CREATE TABLE votingdistricts(
     voting_district TEXT
 );
 
--- CREATE TABLE nationalrepresentative(
---     user_id INT NOT NULL REFERENCES votingdistricts(id),
---     politician TEXT
--- );
-
--- CREATE TABLE staterepresentative(
---     user_id INT NOT NULL REFERENCES votingdistricts(id),
---     politician TEXT
--- );
-
--- CREATE TABLE nationalsenatorone(
---     user_id INT NOT NULL REFERENCES votingdistricts(id),
---     politician TEXT
--- );
-
--- CREATE TABLE nationalsenatortwo(
---     user_id INT NOT NULL REFERENCES votingdistricts(id),
---     politician TEXT
--- );
-
--- CREATE TABLE statesenatorone(
---     user_id INT NOT NULL REFERENCES votingdistricts(id),
---     politician TEXT
--- );
-
--- CREATE TABLE statesenatortwo(
---     user_id INT NOT NULL REFERENCES votingdistricts(id),
---     politician TEXT
--- );
-
 CREATE TABLE politicianinfo(
    voting_district_id INT NOT NULL REFERENCES votingdistricts(id),
+   id SERIAL,
+   state TEXT,
+   voting_district TEXT,
    politician TEXT,
    role TEXT,
    image_url TEXT,
    affiliation TEXT,
    contact_phone TEXT,
    contact_address TEXT,
-   website TEXT
+   website TEXT,
+   propublica_id TEXT
    -- reelection_date DATE,
 );
 

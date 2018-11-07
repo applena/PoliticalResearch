@@ -192,13 +192,16 @@ function Representative(data){
   }
 }
 
-Representative.prototype.save = function(id){
+Representative.prototype.save = function(id, stateAbbreviation, votingDistrict){
   console.log('in rep.save()');
+  console.log(stateAbbreviation,votingDistrict);
   let SQL = `INSERT INTO politicianinfo
-    (politician,role,image_url,affiliation,contact_phone,contact_address,website,voting_district_id)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8)`;
+    (politician,role,image_url,affiliation,contact_phone,contact_address,website,voting_district_id,state,voting_district)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING politician;`;
   let values = Object.values(this);
   values.push(id);
+  values.push(stateAbbreviation);
+  values.push(votingDistrict);
   console.log(SQL, values);
   client.query(SQL,values);
 }
@@ -224,7 +227,7 @@ function saveDistrictandReps(address, district, representatives){
         console.log('error', error);
         console.log('result',result);
         representatives.forEach(rep =>{
-          rep.save(result.rows[0].id)
+          rep.save(result.rows[0].id, values[1], values[2])
         })
       })
     }
