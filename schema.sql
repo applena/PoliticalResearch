@@ -20,6 +20,7 @@ CREATE TABLE politicianinfo(
    id SERIAL,
    state TEXT,
    voting_district TEXT,
+   official_office TEXT,
    politician TEXT,
    role TEXT,
    image_url TEXT,
