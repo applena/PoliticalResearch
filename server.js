@@ -25,6 +25,7 @@ function errorHandler (error, response) {
 app.set('view engine', 'ejs');
 
 
+
 app.get('/', (request, response) => {
   response.render('../views/index.ejs');
 });
@@ -33,55 +34,79 @@ app.get('/checkvoter', (request, response)=> {
   response.render('./pages/checkvoter.ejs');
 });
 
-app.get('/loadrep/:id', (request, response) => {
-  chosenID = request.params.id;
+app.get('/loadrep/:id', (request,response) => {
+  doSomething(request.params.id)
+    .then( stuff => {
+      response.render('pages/individualrep.ejs', {value:stuff});
+    })
+});
+
+app.get('/data/:id', (request, response) => {
+  doSomething(request.params.id)
+    .then( stuff => {
+      console.log(stuff);
+      response.json(stuff);
+    });
+})
+
+let doSomething = (id) => {
+
+  chosenID = id;
+
   let SQL = 'SELECT state FROM politicianinfo WHERE id=$1';
   let values = [chosenID];
+  let contributorArray=[]; //this array holds the doners and the totals
 
-  client.query(SQL, values, (error, result) => {
-    let state = result.rows[0].state;
-    let contributorArray=[]; //this array holds the doners and the totals
+  return client.query(SQL, values)
 
-    //gets the funding info
-    getAllRepsByState(state)
-      .then (reps => {
-        chosenRepresentative(reps)
-          .then(starRep => {
-            let repCid = starRep['@attributes'].cid;
-            let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
-            return superagent.get(URL)
-              .then(result => {
-                let contributors = JSON.parse(result.text);
-                let contributorObjectArray = contributors.response.contributors.contributor;
-                for(let i=0; i<contributorObjectArray.length; i++){
-                  let contributor = new Contributor(contributorObjectArray[i]);
-                  contributorArray.push(contributor);
-                }
-                return contributorArray;
-              });
-          })
-        console.log(contributorArray);
-        let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url FROM politicianinfo WHERE id=$1';
-        let repValues = [chosenID];
-        let repNameRoleAfflicaitonArray = [];
-        client.query(repNameRoleQuery, repValues) 
-          .then (results => {
-            repNameRoleAfflicaitonArray.push(results.rows[0].politician);
-            repNameRoleAfflicaitonArray.push(results.rows[0].role);
-            repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
-            repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
+    .then( result =>  {
 
-            response.render('pages/individualrep.ejs', {value: 
-              {name: repNameRoleAfflicaitonArray[0], 
-                political_affiliation: repNameRoleAfflicaitonArray[2], 
-                role: repNameRoleAfflicaitonArray[1], 
-                image_url: repNameRoleAfflicaitonArray[3],
-                vote: contributorArray}});//this is what I need to feed into my ejs page
-          })
-          .catch( err => console.log(err))
-      });
-  })
-});
+      let state = result.rows[0].state;
+
+      //gets the funding info
+      return getAllRepsByState(state)
+        .then (reps => {
+          return chosenRepresentative(reps)
+            .then(starRep => {
+              let repCid = starRep['@attributes'].cid;
+              let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
+              return superagent.get(URL)
+                .then(result => {
+                  let contributors = JSON.parse(result.text);
+                  let contributorObjectArray = contributors.response.contributors.contributor;
+                  for(let i=0; i<contributorObjectArray.length; i++){
+                    let contributor = new Contributor(contributorObjectArray[i]);
+                    contributorArray.push(contributor);
+                  }
+
+                  console.log(contributorArray);
+                  let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url FROM politicianinfo WHERE id=$1';
+                  let repValues = [chosenID];
+                  let repNameRoleAfflicaitonArray = [];
+                  
+                  return client.query(repNameRoleQuery, repValues) 
+                    .then (results => {
+                      repNameRoleAfflicaitonArray.push(results.rows[0].politician);
+                      repNameRoleAfflicaitonArray.push(results.rows[0].role);
+                      repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
+                      repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
+        
+                      return {name: repNameRoleAfflicaitonArray[0], 
+                        political_affiliation: repNameRoleAfflicaitonArray[2], 
+                        role: repNameRoleAfflicaitonArray[1], 
+                        image_url: repNameRoleAfflicaitonArray[3],
+                        vote: contributorArray
+                      }
+                    });//this is what I need to feed into my ejs page
+
+                });
+            })
+
+        })
+        .catch( err => console.log(err))
+    });
+
+};
 
 function Contributor(data) {
   this.name = data['@attributes'].org_name;
@@ -90,50 +115,25 @@ function Contributor(data) {
 
 function getAllRepsByState(state) {
   let URL = `http://www.opensecrets.org/api/?method=getLegislators&id=${state}&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
-  //console.log(URL);
   return superagent.get(URL)
     .then(results =>{
-      // console.log(results);
       const reps = JSON.parse(results.text);
-      //console.log(reps);
       return reps;
-      // chosenRepresentative(reps)
-      //   .then( result => {
-      //     return result;
-      //   })
     })
     .catch(error => errorHandler(error));
 }
 
 function chosenRepresentative(obj) {
-  // console.log('within chosenrepresentatives');
   let SQL = 'SELECT politician FROM politicianinfo WHERE id=$1';
-  //console.log(chosenID);
   let values = [chosenID];
   return client.query(SQL, values)
     .then (results => {
-      // console.log(results);
-      //console.log(results.rows[0].politician);
       const starRep = obj.response.legislator.find(rep => {
         return rep['@attributes'].firstlast===results.rows[0].politician;
       })
       return starRep;
     })
-    // console.log('star rep ', starRep);
 }
-
-// app.get('/loadrep/:id', (request, response) => {
-//   let {id} = request.params; //params is an object in the request object that stores anything in the url that is followed by a : as a key (in this case, let {id} = request.params is the same as just using request.params.id)
-//   let SQL = `SELECT * FROM reps WHERE id=${id}`; // need to verify the correct table
-//   client.query(SQL, (error, result) =>{
-//     if(!error){
-//       let representative = result.rows[0];
-//       response.render('/pages/individualrep.ejs', {value: representative});
-//     } else{
-//       response.redirect('./pages/error.ejs');
-//     }
-//   })
-//})
 
 app.get('/about', (request, response) =>{
   response.render('./pages/about.ejs');
