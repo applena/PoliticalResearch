@@ -5,17 +5,15 @@ html{
 }
 
 body {
-  font-family: 'Lato', sans-serif;
-  color: black;
+  font-family: 'Fjalla One', sans-serif;
+  color: #AAAAAA;
   align-content: center;
-  background-color: linear-gradient(rgba(0,0,0,0.05),rgba(0,0,0,0));
+  background-color: #F3F3F3;
 }
 /*---------   header    -------------*/
 
 
 header {
-  background-color: rgb(28, 27, 27);
-  color: whitesmoke;
   height: 11em;
   text-align: center;
   display: block;
@@ -27,7 +25,7 @@ header h1{
   padding-top: .5em;
   width: 80%;
   margin: auto;
-  font-family: 'Fjalla One', sans-serif, bold;
+  font-family: 'Fjalla One', sans-serif;
 }
 
 nav ul li{
@@ -38,7 +36,7 @@ display: none;
 
 .page-header{
   height: 4em;
-  background-color: #E43E3D;
+  background-color: #A2403E;
   font-weight: bold;
 }
 
@@ -46,7 +44,7 @@ display: none;
   text-align: center;
   padding-top: .7em;
   font-size: 25px;
-  color: black;
+  color: #AAAAAA;
 }
 
 /*-------     intro     ---------*/
@@ -58,16 +56,14 @@ display: none;
   align-content: center;
   justify-content: center;
   text-align: center;
-  color: black;
+  color: #AAAAAA;
   font-size: 24px;
 }
 
-#intro p:first-of-type{
-  font-size: 1.5em;
-}
+
 
 #intro p {
-  font-size: .9em;
+  font-size: 1.3em;
 }
 
 /*----------  Cards       --------------*/
@@ -93,8 +89,8 @@ display: none;
 .deck legend{
   font-size: 2.6em;
   margin-bottom: 20px;
-  background-color: rgb(28, 27, 27);
-  color: white;
+  background-color:#c9eced;
+  color: #AAAAAA;
   height: 100px;
   width: 100%;
 }
@@ -124,8 +120,8 @@ display: none;
 /*--------------------------*/
 
 form legend{
-  background-color: rgb(28, 27, 27);
-  color: white;
+  background-color: #c9eced;
+  color: #AAAAAA;
 }
 
 form{
@@ -145,18 +141,7 @@ form{
   align-content: center;
   justify-content: center;
 }
-#zip input{
-  margin: 1em 0em 3em 0em;
-  border-top: none;
-  border-right:none;
-  border-left:none;
-  outline-offset: none;
-  outline-style: none;
-  overflow: scroll;
-  background-color: rgb(28, 27, 27);
-  color: white;
-  font-size: 14px;
-}
+
 
 #address{
   font-size: 18px; 
@@ -169,24 +154,27 @@ form{
 }
 
 #address input{
-  font-size: 14px;
+  font-size: 20px;
   border-top: none;
   border-right:none;
   border-left:none;
   outline-offset: none;
   outline-style: none;
   overflow: scroll;
-  background-color: rgb(28, 27, 27);
-  color: white;
+  background-color: #f3f3f3;
+  color: rgb(150, 149, 149);
   margin-top: .5em;
 
 }
 
 #address button{
-  background-color: black;
+  background-color: #A2403E;
+  border: 1px solid white;
+  height: 2em;
+  font-size: 20px;
   color: white;
   margin-top: 2em;
-  width: 200px;
+  width: 10em;
 }
 
 legend{
@@ -201,8 +189,8 @@ legend{
 /*-----------  Footer   -----------*/
 
 footer {
-  background-color: rgb(28, 27, 27);
-  color: white;
+  background-color: #AAAAAA;
+  color: 
   width: 100%;
   height: 6em;
   text-align: center;

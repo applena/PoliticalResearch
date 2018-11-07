@@ -36,10 +36,12 @@ nav ul li{
 .deck form{
   width: 100%;
   margin: auto;
-  border: 2px solid rgb(28, 27, 27);
+  border: 2px solid #f3f3f3;
   color: red;
   display: flex; 
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
 }
 
@@ -58,7 +60,7 @@ nav ul li{
   flex-direction: column;     
   justify-content: center;
   align-items: center;
-  border: 1px solid red;
+  border: 1px solid #f3f3f3;
   width: 90%;
 }
 
@@ -67,7 +69,7 @@ nav ul li{
   flex-direction: column;     
   justify-content: center;
   align-items: center;
-  border: 1px solid green;
+  border: 1px solid #f3f3f3;
   width: 90%;
 }
 
@@ -168,7 +170,7 @@ footer{
   .deck form{
     width: 80%;
     margin: auto;
-    border: 2px solid rgb(28, 27, 27);
+    border: 2px solid #f3f3f3;
     color: red;
      display: flex; 
     flex-direction: column;
@@ -185,7 +187,7 @@ footer{
     flex-direction: column;     
     justify-content: center;
     align-items: center;
-    border: 1px solid red;
+    border: 1px solid #f3f3f3;
     width: 90%;
   }
   
@@ -194,7 +196,7 @@ footer{
     flex-direction: column;     
     justify-content: center;
     align-items: center;
-    border: 1px solid green;
+    border: 1px solid #f3f3f3;
     width: 90%;
   }
   
@@ -300,7 +302,7 @@ footer{
   .deck form{
     width: 80%;
     margin: auto;
-    border: 2px solid rgb(28, 27, 27);
+    border: 2px solid #f3f3f3;
     color: red;
     display: flex;
     flex-direction: column;
@@ -313,7 +315,7 @@ footer{
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-evenly;
-    border: 1px solid red;
+    border: 1px solid #f3f3f3;
     width: 90%
   }
 
@@ -322,7 +324,7 @@ footer{
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-evenly;
-    border: 1px solid green;
+    border: 1px solid #f3f3f3;
     width: 90%
   }
 
