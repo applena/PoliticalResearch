@@ -4,7 +4,6 @@
 -- DROP TABLE if EXISTS nationalsenatortwo;
 -- DROP TABLE if EXISTS statesenatorone;
 -- DROP TABLE if EXISTS statesenatortwo;
-DROP TABLE if EXISTS votingdistricts;
 
 DROP TABLE if EXISTS votinghistory;
 DROP TABLE if EXISTS upcomingvote;
@@ -13,6 +12,7 @@ DROP TABLE if EXISTS candidatedata;
 DROP TABLE if EXISTS issuemap;
 DROP TABLE if EXISTS politicianinfo;
 
+DROP TABLE if EXISTS votingdistricts;
 
 CREATE TABLE votingdistricts(
     id SERIAL PRIMARY KEY,
