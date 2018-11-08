@@ -147,7 +147,6 @@ app.listen(PORT, () => {
 });
 
 app.post('/representatives', (request, response) =>{
-  //console.log(request.body);
   let userAddress = '';
   if(request.body.address){
     userAddress = request.body.address.join('%20').split(' ').join('%20');
@@ -155,29 +154,20 @@ app.post('/representatives', (request, response) =>{
   else{
     userAddress = request.body.zip.split(' ').join('%20');
   }
-  console.log(userAddress);
   getRepresentatives(userAddress)
-    .then (results => {
-      //console.log(results);
+    .then (results =>{
       let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
       let resultValues = [results.districtPair.stateDistrict];
       client.query(getResults, resultValues, (error, result)=> {
-        //console.log(result);
-        //console.log(error);
         response.render('./pages/representatives.ejs', {value: result.rows});
-        //console.log(result.rows);
       })
     })
-
 });
 
 function getRepresentatives(address) {
-  // console.log('in loadClient');
   let URL = `https://www.googleapis.com/civicinfo/v2/representatives?key=${process.env.GOOGLE_CIVIC_API_KEY}&address=${address}`
-  // console.log(URL);
   return superagent.get(URL)
     .then(results =>{
-      //console.log(results);
       let relevantOffices = filterRelevantOffices(results.body.offices);
       let districtArray = ['',''];
       relevantOffices.forEach(office =>{
@@ -209,21 +199,22 @@ function getRepresentatives(address) {
         else{
           roleName += 'Representative';
         }
+        let office = relevantOffices[index].name;
         relevantOffices[index].officialIndices.forEach(index =>{
-          relevantIndicesAndRoles.push({'role': roleName, 'index': index})
+          relevantIndicesAndRoles.push({'role': roleName, 'office': office, 'index': index})
         })
       }
       let relevantPoliticians = [];
       relevantIndicesAndRoles.forEach( indexPair =>{
         relevantPoliticians.push(results.body.officials[indexPair.index]);
         relevantPoliticians[relevantPoliticians.length-1].role = indexPair.role;
+        relevantPoliticians[relevantPoliticians.length-1].office = indexPair.office;
       });
       const reps = relevantPoliticians.map( person =>{
         const rep = new Representative(person);
         return rep;
       });
       saveDistrictandReps(address,districtPair.stateDistrict,reps)
-      //console.log({'reps': reps, 'districtPair': districtPair})
       return {'reps': reps, 'districtPair': districtPair};
     })
 }
@@ -234,7 +225,6 @@ function UserDistricts(districts){
 }
 
 UserDistricts.prototype.save = function(address){
-  //console.log('address', address);
   let votingDistrict = Object.entries(this)[1][1];
   let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
   client.query(SQL, (error, result) =>{
@@ -248,14 +238,10 @@ UserDistricts.prototype.save = function(address){
       let values = [address, address.substring(address.length-2)];
       values.push(Object.entries(this)[1][1]);
       client.query(SQL,values, (error,result) =>{
-        console.log('error', error);
-        //console.log('result',result);
         return result.rows[0].id;
       })
     }
     else{
-      //console.log('voting district found, ID:');
-      //console.log(result.rows[0].id);
       return result.rows[0].id;
     }
   });
@@ -290,17 +276,57 @@ function Representative(data){
   else{
     this.website_url = 'No website URL found.';
   }
+  if(data.office){
+    this.officialOffice = data.office;
+  }
+  else{
+    this.officialOffice = 'No official office';
+  }
 }
 
 Representative.prototype.save = function(id, stateAbbreviation, votingDistrict){
   let SQL = `INSERT INTO politicianinfo
-    (politician,role,image_url,affiliation,contact_phone,contact_address,website,voting_district_id,state,voting_district)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING politician;`;
+    (politician,role,image_url,affiliation,contact_phone,contact_address,website,official_office,voting_district_id,state,voting_district,propublica_id)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);`;
   let values = Object.values(this);
   values.push(id);
   values.push(stateAbbreviation);
   values.push(votingDistrict);
-  client.query(SQL,values);
+  if(/Federal/.test(values[1])){
+    //Grab propublica ID
+    findProPublicaID(values[1],values[9],values[7])
+      .then( (result) =>{
+        values.push(result);
+        client.query(SQL, values);
+      })
+      .catch( () =>{
+        values.push('No ProPublica ID');
+        client.query(SQL, values);
+      })
+  }
+  else{
+    values.push('No ProPublica ID')
+    client.query(SQL, values);
+  }
+}
+
+function findProPublicaID(role,state,official_office){
+  let URL = `https://api.propublica.org/congress/v1/members/`;
+  if(role.split(' ')[1] === 'Senator'){
+    URL += `senate/${state}/current.json`;
+  }
+  else{
+    URL += `house/${state}/`
+    URL += `${official_office.substring(official_office.length-2)}`
+    URL += `/current.json`;
+  }
+  console.log('Attempting to use the API req URL:', URL);
+  return superagent.get(URL)
+    .set('X-API-Key', `${process.env.PROPUBLICA_API_KEY}`)
+    .then(result =>{
+      console.log('results of propublica API: ',result.body.results[0].id);
+      return result.body.results[0].id;
+    })
 }
 
 function saveDistrictandReps(address, district, representatives){
@@ -311,7 +337,6 @@ function saveDistrictandReps(address, district, representatives){
       console.log(error);
     }
     else if(!result.rowCount){
-      //console.log(result.rows);
       SQL = `INSERT INTO votingdistricts
             (address,state,voting_district)
             VALUES($1,$2,$3) RETURNING id;`;
@@ -319,15 +344,12 @@ function saveDistrictandReps(address, district, representatives){
       values.push(votingDistrict);
       client.query(SQL,values, (error,result) =>{
         console.log('error', error);
-        //console.log('result',result);
         representatives.forEach(rep =>{
           rep.save(result.rows[0].id, values[1], values[2])
         })
       })
     }
     else{
-      //console.log('voting district found, ID:');
-      //console.log(result.rows[0].id);
       return result.rows[0].id;
     }
   });
