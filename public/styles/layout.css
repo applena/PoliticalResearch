@@ -76,6 +76,13 @@ nav ul li{
 .hidden {
   display: none;
 }
+#repdeck{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .card{
   display:flex;
@@ -140,6 +147,9 @@ footer{
 
 
 @media (min-width:775px){
+  
+
+  
   nav ul li{
     align-content: space-around;
     margin: 3em;
@@ -202,7 +212,18 @@ footer{
     width: 90%;
   }
   
-  
+  #repdeck{
+    display: flex;
+    flex-direction: row;
+  }
+
+  #repcard{
+    display:flex;
+    flex-direction: column;
+  }
+
+
+
   
   .card{
     display:flex;
@@ -275,6 +296,10 @@ footer{
 
 
 @media (min-width: 1221px){
+  header{
+    font-size: 1.8em;
+  }
+  
   nav ul li{
     align-content: space-around;
     margin: 3em;
@@ -310,7 +335,9 @@ footer{
     flex-direction: column;
   }
 
-  
+  .deck legend{
+    width:100%;
+  }
   
   #national-rep .innerdeck{
     display: flex;
