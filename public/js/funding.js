@@ -1,18 +1,13 @@
 'use strict';
 
 let ctx = document.getElementById('fundingChart').getContext('2d');
-
-//let dummyData = [ { name: 'Morgan & Morgan', total: '113400' }, { name: 'League of Conservation Voters', total: '98310' }, { name: 'Microsoft Corp', total: '90320' }, { name: 'Amazon.Com', total: '60335' }, { name: 'University of Washington', total: '54955' }, { name: 'Boeing Co', total: '54019' }, { name: 'Zillow Inc', total: '42450' }, { name: 'Emily\'s List', total: '41011' }, { name: 'Fisher Investments', total: '25400' }, { name: 'Valve Corp', total: '24650' } ];
-
+let id = $('.repid').text();
 let labels = [];
 let data = [];
 
 function getData () {
-  console.log('in getData on funding.js');
-  $.get('http://localhost:3000/data/1')
+  $.get(`http://localhost:3000/data/${id}`)
     .then (json => {
-      console.log(json);
-
       makeChart(json.vote);
       drawChart();
     })
@@ -26,9 +21,6 @@ function makeChart (arr) {
     return data.push(contributor.total);
   })
 }
-
-console.log(labels);
-console.log(data);
 
 function drawChart () {
   let chart = new Chart(ctx, {
