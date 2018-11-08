@@ -9,12 +9,27 @@ nav ul li{
   margin: 3em;
 }
 
+header h1{
+font-size: 4.3em;
+font-weight: bold;
+padding-top: .75em;
+width: 80%;
+margin: auto;
+font-family: 'Fjalla One', sans-serif;
+}
+
 .page-header{
   display:flex; 
   align-content: center;
   justify-content: center;
+  background-color: #c9eced;
+  height: 4em;
+  font-weight: bold;
 }
 
+.page-header h2{
+  font-size:25px;
+}
 
 
 #intro p{
@@ -83,6 +98,29 @@ nav ul li{
   justify-content: center;
 }
 
+#repcard *{
+  font-size: 24px;
+  margin-top: .8em;
+  color: #aaaaaa;
+}
+
+#funding-chart{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  width: 80%;
+ 
+}
+
+#funding{
+  margin-top: 1em;
+  height: 2em;
+  font-size: 24px;
+  background-color: #c9eced;
+
+}
+
 
 .card{
   display:flex;
@@ -146,14 +184,22 @@ footer{
 
 
 
-@media (min-width:775px){
-  
-
+@media (min-width:800px){
   
   nav ul li{
     align-content: space-around;
     margin: 3em;
   }
+
+
+header h1{
+  font-size: 5em;
+  font-weight: bolder;
+  padding-top: .5em;
+  width: 80%;
+  margin: auto;
+  font-family: 'Fjalla One', sans-serif;
+}
   
   .page-header{
     display:flex; 
@@ -161,7 +207,10 @@ footer{
     justify-content: center;
   }
   
-  
+  .page-header h2{
+    font-size: 35px;
+    padding-top: .3em;
+  }
   
   #intro p{
     display:flex;
@@ -220,9 +269,19 @@ footer{
   #repcard{
     display:flex;
     flex-direction: column;
+    font-size: 30px;
   }
 
+  #repcard *{
+    margin-top: 1em;
+  }
 
+  #funding-chart{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+  }
 
   
   .card{
@@ -265,7 +324,6 @@ footer{
     display:flex;
     justify-content: center;
     align-content: center;
-    background-color:pink;
   }
   
   #address{
@@ -310,6 +368,11 @@ footer{
     align-content: center;
     justify-content: center;
   }
+  .page-header h2{
+    font-size: 45px;
+    padding-top: .3em;
+  }
+
   #intro p{
     display:flex;
     align-content: center;
@@ -386,6 +449,28 @@ footer{
     color: white;
   }
 
+
+
+  #repcard *{
+    margin-top: 1.3em;
+
+  }
+
+  #funding-chart{
+    margin-top: 3em;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+  }
+
+#funding{
+  margin-top: 1em;
+  height: 3em;
+  font-size: 40px;
+  background-color: #c9eced;
+
+}
   
   form{
     display: flex;
