@@ -12,15 +12,16 @@ footer li a:hover {
 }
 
 header {
-  background-image: url("../img/flag.jpg"); /* The image used */
+  background-image: url("../img/vote.jpg"); /* The image used */
   background-color: #cccccc; /* Used if the image is unavailable */
-  background-position: center; /* Center the image */
+  background-position: top; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
   background-size: cover; /* Resize the background image to cover the entire container */
+  height: 23em;
 }
 
 header h1 {
-  color: whitesmoke;
+  color: rgb(59, 58, 58);
 }
 
 nav {
@@ -35,11 +36,12 @@ nav ul li {
 
 nav ul li a {
   text-decoration:none;
-  color:darkgray;
+  font-size: 1.5em;
+  color: rgb(59, 58, 58);
 }
 
 nav ul li a:hover {
-  color: #000;
+  color: rgb(172, 170, 170);
 }
 
 form select {

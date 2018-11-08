@@ -22,7 +22,6 @@ font-family: 'Fjalla One', sans-serif;
   display:flex; 
   align-content: center;
   justify-content: center;
-  background-color: #c9eced;
   height: 4em;
   font-weight: bold;
 }
