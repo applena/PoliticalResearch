@@ -1,0 +1,33 @@
+footer li {
+  padding: 3em;
+}
+
+footer li a {
+  color: #efefef;
+  text-decoration: none
+}
+
+footer li a:hover {
+  color: #fff;
+}
+
+#our-team {
+  margin: auto;
+  width: 90%;
+}
+
+.personal-bio {
+  border: 2px solid;
+  height: 22em;
+  float: left;
+  margin-top: 1em;
+  margin: 1em;
+  padding: 1em;
+  width: 26%;
+}
+
+.personal-bio img {
+  float: left;
+  padding-right: 1em;
+  width: 50%;
+}
