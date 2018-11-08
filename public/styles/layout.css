@@ -213,7 +213,18 @@ footer{
     width: 90%;
   }
   
-  
+  #repdeck{
+    display: flex;
+    flex-direction: row;
+  }
+
+  #repcard{
+    display:flex;
+    flex-direction: column;
+  }
+
+
+
   
   .card{
     display:flex;
