@@ -6,7 +6,8 @@ let labels = [];
 let data = [];
 
 function getData () {
-  $.get(`http://localhost:3000/data/${id}`)
+  // $.get(`http://localhost:3000/data/${id}`) \\for local testing only
+  $.get(`https://politicalresearch301.herokuapp.com/data/${id}`)
     .then (json => {
       makeChart(json.vote);
       drawChart();
