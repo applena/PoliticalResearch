@@ -73,7 +73,9 @@ nav ul li{
   width: 90%;
 }
 
-
+.hidden {
+  display: none;
+}
 
 .card{
   display:flex;

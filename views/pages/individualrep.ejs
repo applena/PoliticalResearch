@@ -14,7 +14,7 @@
     <p>Role: <%= value.role %></p>
     <div class="deck" id="voting-history">
       <p>Recent Voting History:</p>
-      <% value.vote.forEach(vote => { %>
+      <% value.voteHistory.forEach(vote => { %>
         <h3><%= vote.name %></h3>
         <p><%= vote.result%></p>
       <% }) %>
