@@ -57,7 +57,7 @@ let doSomething = (id) => {
 
   return client.query(SQL, values)
 
-    .then( result =>  {
+    .then( result => {
 
       let state = result.rows[0].state;
 
@@ -81,18 +81,18 @@ let doSomething = (id) => {
                   let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url, id FROM politicianinfo WHERE id=$1';
                   let repValues = [chosenID];
                   let repNameRoleAfflicaitonArray = [];
-                  
-                  return client.query(repNameRoleQuery, repValues) 
+
+                  return client.query(repNameRoleQuery, repValues)
                     .then (results => {
                       repNameRoleAfflicaitonArray.push(results.rows[0].politician);
                       repNameRoleAfflicaitonArray.push(results.rows[0].role);
                       repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
                       repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
                       repNameRoleAfflicaitonArray.push(results.rows[0].id);
-        
-                      return {name: repNameRoleAfflicaitonArray[0], 
-                        political_affiliation: repNameRoleAfflicaitonArray[2], 
-                        role: repNameRoleAfflicaitonArray[1], 
+
+                      return {name: repNameRoleAfflicaitonArray[0],
+                        political_affiliation: repNameRoleAfflicaitonArray[2],
+                        role: repNameRoleAfflicaitonArray[1],
                         image_url: repNameRoleAfflicaitonArray[3],
                         id: repNameRoleAfflicaitonArray[4],
                         vote: contributorArray,
@@ -156,13 +156,20 @@ app.post('/representatives', (request, response) =>{
   }
   getRepresentatives(userAddress)
     .then (results =>{
-      let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
-      let resultValues = [results.districtPair.stateDistrict];
-      client.query(getResults, resultValues, (error, result)=> {
-        response.render('./pages/representatives.ejs', {value: result.rows});
-      })
+      pauseHack(500)
+        .then( () =>{
+          let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
+          let resultValues = [results.districtPair.stateDistrict];
+          client.query(getResults, resultValues, (error, result)=> {
+            response.render('./pages/representatives.ejs', {value: result.rows});
+          })
+        })
     })
 });
+
+function pauseHack (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
 
 function getRepresentatives(address) {
   let URL = `https://www.googleapis.com/civicinfo/v2/representatives?key=${process.env.GOOGLE_CIVIC_API_KEY}&address=${address}`
