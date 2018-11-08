@@ -11,18 +11,20 @@
     <p>Name: <%= value.name %></p>
     <p>Political Affiliation: <%= value.political_affiliation %></p>
     <p>Role: <%= value.role %></p>
-    <div class="deck" id="voting-history">
-      <p>Recent Voting History:</p>
-      <% value.vote.forEach(vote => { %>
-        <h3><%= vote.name %></h3>
-        <p><%= vote.result%></p>
-      <% }) %>
-    </div>
     <div class="deck" id="funding">
       <p>Sources of Funding: </p>
     </div>
     <div id="funding-chart">
         <canvas id="fundingChart"></canvas>
+    </div>
+    <div class="deck" id="voting-history">
+        <div class="deck" id="voting-history">
+            <p>Recent Voting History:</p>
+            <% value.voteHistory.forEach(vote => { %>
+              <h3><%= vote.description %></h3>
+              <p><%= vote.position%></p>
+            <% }) %>
+          </div>
     </div>
   </main>
   <%- include ../partials/footer.ejs %>

@@ -8,6 +8,7 @@ let labels = [];
 let data = [];
 
 function getData () {
+  console.log('in getData on funding.js');
   $.get('http://localhost:3000/data/1')
     .then (json => {
       console.log(json);
