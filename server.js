@@ -195,7 +195,6 @@ app.get('/about', (request, response) =>{
   response.render('./pages/about.ejs');
 })
 
-
 app.listen(PORT, () => {
   console.log('listening on port ' + PORT);
 });

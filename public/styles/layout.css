@@ -4,10 +4,10 @@
    background-repeat: repeat; 
   } */
 
-nav ul li{
+/* nav ul li{
   align-content: space-around;
   margin: 3em;
-}
+} */
 
 header h1{
 font-size: 4.3em;
@@ -186,10 +186,10 @@ footer{
 
 @media (min-width:800px){
   
-  nav ul li{
+  /* nav ul li{
     align-content: space-around;
     margin: 3em;
-  }
+  } */
 
 
 header h1{
@@ -358,10 +358,10 @@ header h1{
     font-size: 1.8em;
   }
   
-  nav ul li{
+  /* nav ul li{
     align-content: space-around;
     margin: 3em;
-  }
+  } */
   
   .page-header{
     display:flex; 
