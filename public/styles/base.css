@@ -5,7 +5,7 @@ html{
 }
 
 body {
-  font-family: 'Fjalla One', sans-serif;
+  font-family: 'Raleway', sans-serif;
   color: #AAAAAA;
   align-content: center;
   background-color: #F3F3F3;
@@ -78,10 +78,9 @@ header {
   font-size: 2.6em;
   margin-bottom: 20px;
   background-color:#c9eced;
-  border: 2px solid white;
   color: #AAAAAA;
   height: 100px;
-  width: 80%;
+  width: 100%;
 }
 
 
@@ -98,7 +97,7 @@ header {
 .card h3{
   margin: 2px;
   font-weight: bold;
-  font-family: 'Fjalla One', sans-serif;
+  font-family: 'Raleway', sans-serif;
 }
 
 .card p{
@@ -154,10 +153,12 @@ form{
   border-left:none;
   outline-offset: none;
   outline-style: none;
+  overflow: scroll;
+  background-color: white;
+  width: 15em;
   background-color: #f3f3f3;
   color: rgb(150, 149, 149);
   margin-top: .5em;
-
 }
 
 #address button{
@@ -170,11 +171,15 @@ form{
   width: 10em;
 }
 
+#address button a:hover{
+  opacity: 1;
+}
+
 legend{
   font-size: 30px;
   text-align: center;
   padding-top: .5em;
-  font-family: 'Fjalla One', sans-serif;
+  font-family: 'Raleway', sans-serif;
 
 }
 

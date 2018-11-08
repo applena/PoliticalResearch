@@ -52,7 +52,6 @@ font-family: 'Fjalla One', sans-serif;
   width: 100%;
   margin: auto;
   border: 2px solid #f3f3f3;
-  color: red;
   display: flex; 
   flex-direction: column;
   align-items: center;
@@ -75,8 +74,7 @@ font-family: 'Fjalla One', sans-serif;
   flex-direction: column;     
   justify-content: center;
   align-items: center;
-  border: 1px solid #f3f3f3;
-  width: 90%;
+  width: 100%;
 }
 
 #state-rep .statedeck{
@@ -84,13 +82,42 @@ font-family: 'Fjalla One', sans-serif;
   flex-direction: column;     
   justify-content: center;
   align-items: center;
-  border: 1px solid #f3f3f3;
-  width: 90%;
+  width: 100%;
 }
 
 .hidden {
   display: none;
 }
+
+#voting-history.deckhist{
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+#voting-history.deckhist *{
+  margin: .7em;
+  font-size: 18px;
+  font-family: 'Raleway', sans-serif;
+}
+
+
+
+
+#voting-history.deckhist #histheader{
+  margin-top: 2em;
+  padding-top: .5em;
+  height: 1.5em;
+  width: 100%;
+  font-size: 24px;
+  background-color: #c9eced;
+  text-align:center;
+  margin-bottom: 2em;
+}
+
+
+
 #repdeck{
   display:flex;
   flex-direction: column;
@@ -102,6 +129,7 @@ font-family: 'Fjalla One', sans-serif;
   font-size: 24px;
   margin-top: .8em;
   color: #aaaaaa;
+  padding: 3px 15px 3px 15px;
 }
 
 #funding-chart{
@@ -110,7 +138,6 @@ font-family: 'Fjalla One', sans-serif;
   align-items: center;
   margin: auto;
   width: 80%;
- 
 }
 
 #funding{
@@ -242,14 +269,29 @@ header h1{
     align-items: center;
     justify-content: center;
   }
-  
+
+#voting-history.deck{
+  display: flex;
+  justify-content: flex-start;
+}
+
+#voting-history.deckhist #histheader{
+  margin-top: 2em;
+  padding-top: .5em;
+  height: 1.5em;
+  width: 100%;
+  font-size: 24px;
+  background-color: #c9eced;
+  text-align:center;
+  margin-bottom: 2em;
+}  
   #national-rep .innerdeck {
     display: flex;
     flex-direction: column;     
     justify-content: center;
     align-items: center;
     border: 1px solid #f3f3f3;
-    width: 90%;
+    width: 100%;
   }
   
   #state-rep .statedeck{
@@ -258,7 +300,7 @@ header h1{
     justify-content: center;
     align-items: center;
     border: 1px solid #f3f3f3;
-    width: 90%;
+    width: 100%;
   }
   
   #repdeck{
@@ -274,6 +316,7 @@ header h1{
 
   #repcard *{
     margin-top: 1em;
+    padding: 3px 15px 3px 15px;
   }
 
   #funding-chart{
@@ -407,8 +450,7 @@ header h1{
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-evenly;
-    border: 1px solid #f3f3f3;
-    width: 90%
+    width: 100%
   }
 
   #state-rep .innerdeck{
@@ -416,10 +458,24 @@ header h1{
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-evenly;
-    border: 1px solid #f3f3f3;
-    width: 90%
+    width: 100%
   }
 
+
+#voting-history.deckhist{
+  display: flex;
+  justify-content: flex-start;
+}
+#voting-history.deckhist #histheader{
+  margin-top: 2em;
+  padding-top: 1.5em;
+  width: 100%;
+  background-color: #c9eced;
+  text-align:center;
+  margin-bottom: 2em;
+  height: 3em;
+  font-size: 40px;
+}
   #address {
     text-align: center;
     width: 80%;
@@ -453,7 +509,7 @@ header h1{
 
   #repcard *{
     margin-top: 1.3em;
-
+    padding: 3px 15px 3px 15px;
   }
 
   #funding-chart{
