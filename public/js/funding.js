@@ -28,7 +28,7 @@ function drawChart () {
     data: {
       labels: labels,
       datasets: [{
-        label: 'Canidate Funding',
+        label: 'Candidate Funding',
         data: data,
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',

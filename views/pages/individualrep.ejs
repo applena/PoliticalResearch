@@ -9,7 +9,6 @@
     </div>
     
     <p class="hidden repid"><%= value.id %></p>
-    <p>Name: <%= value.name %></p>
     <div id="repdeck">
     <img id="imgcard" src="<%= value.image_url %>" alt="<%= value.name %>" />
     <div id="repcard">
@@ -17,18 +16,21 @@
       <p>Role: <%= value.role %></p>
     </div>
   </div>
-    <div class="deck" id="voting-history">
-      <p>Recent Voting History:</p>
-      <% value.voteHistory.forEach(vote => { %>
-        <h3><%= vote.name %></h3>
-        <p><%= vote.result%></p>
-      <% }) %>
-    </div>
+  
     <div class="deck" id="funding">
       <p>Sources of Funding: </p>
     </div>
     <div id="funding-chart">
-        <canvas id="fundingChart"></canvas>
+        <canvas id="fundingChart" style="position: relative; height:4em; width:4em"></canvas>
+    </div>
+    <div class="deck" id="voting-history">
+        <div class="deck" id="voting-history">
+            <p>Recent Voting History:</p>
+            <% value.voteHistory.forEach(vote => { %>
+              <h3><%= vote.description %></h3>
+              <p><%= vote.position%></p>
+            <% }) %>
+          </div>
     </div>
   </main>
   <%- include ../partials/footer.ejs %>

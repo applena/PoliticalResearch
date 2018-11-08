@@ -33,16 +33,20 @@ app.get('/checkvoter', (request, response)=> {
 });
 
 app.get('/loadrep/:id', (request,response) => {
-  doSomething(request.params.id)
+  console.log('hitting loadrep');
+  chosenID = request.params.id;
+  doSomething(chosenID)
     .then( stuff => {
+      console.log('stuff from doSomething on /loadrep/: ', stuff);
       response.render('pages/individualrep.ejs', {value:stuff});
     })
 });
 
 app.get('/data/:id', (request, response) => {
-  doSomething(request.params.id)
+  console.log('hitting data')
+  doSomething(chosenID)
     .then( stuff => {
-      console.log(stuff);
+      console.log('stuff from doSomething on /data/: ', stuff);
       response.json(stuff);
     });
 })
@@ -54,18 +58,20 @@ let doSomething = (id) => {
   let SQL = 'SELECT state FROM politicianinfo WHERE id=$1';
   let values = [chosenID];
   let contributorArray=[]; //this array holds the doners and the totals
-
+  console.log('chosenID: ', chosenID);
   return client.query(SQL, values)
 
-    .then( result =>  {
+    .then( result => {
 
       let state = result.rows[0].state;
 
       //gets the funding info
       return getAllRepsByState(state)
         .then (reps => {
+          console.log('reps:',reps);
           return chosenRepresentative(reps)
             .then(starRep => {
+              console.log('starRep: ',starRep)
               let repCid = starRep['@attributes'].cid;
               let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
               return superagent.get(URL)
@@ -76,38 +82,62 @@ let doSomething = (id) => {
                     let contributor = new Contributor(contributorObjectArray[i]);
                     contributorArray.push(contributor);
                   }
+                  return retrieveLatestVotePositions(chosenID)
+                    .then( (voteResult) =>{
+                      let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url FROM politicianinfo WHERE id=$1';
+                      let repValues = [chosenID];
+                      let repNameRoleAfflicaitonArray = [];
 
-                  //console.log(contributorArray);
-                  let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url, id FROM politicianinfo WHERE id=$1';
-                  let repValues = [chosenID];
-                  let repNameRoleAfflicaitonArray = [];
-                  
-                  return client.query(repNameRoleQuery, repValues) 
-                    .then (results => {
-                      repNameRoleAfflicaitonArray.push(results.rows[0].politician);
-                      repNameRoleAfflicaitonArray.push(results.rows[0].role);
-                      repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
-                      repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
-                      repNameRoleAfflicaitonArray.push(results.rows[0].id);
-        
-                      return {name: repNameRoleAfflicaitonArray[0], 
-                        political_affiliation: repNameRoleAfflicaitonArray[2], 
-                        role: repNameRoleAfflicaitonArray[1], 
-                        image_url: repNameRoleAfflicaitonArray[3],
-                        id: repNameRoleAfflicaitonArray[4],
-                        vote: contributorArray,
-                        //voteHistory: voteHistoryArray
-                      }
-                    });
+                      return client.query(repNameRoleQuery, repValues)
+                        .then (results => {
+                          repNameRoleAfflicaitonArray.push(results.rows[0].politician);
+                          repNameRoleAfflicaitonArray.push(results.rows[0].role);
+                          repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
+                          repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
 
+                          return {name: repNameRoleAfflicaitonArray[0],
+                            political_affiliation: repNameRoleAfflicaitonArray[2],
+                            role: repNameRoleAfflicaitonArray[1],
+                            image_url: repNameRoleAfflicaitonArray[3],
+                            vote: contributorArray,
+                            id: chosenID,
+                            voteHistory: voteResult
+                          }
+                        });//this is what I need to feed into my ejs page
+                    })
                 });
             })
-
         })
         .catch( err => console.log(err))
     });
 
 };
+
+function saveDistrictandReps(address, district, representatives){
+  let votingDistrict = district;
+  let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
+  client.query(SQL, (error, result) =>{
+    if(error){
+      console.log(error);
+    }
+    else if(!result.rowCount){
+      SQL = `INSERT INTO votingdistricts
+            (address,state,voting_district)
+            VALUES($1,$2,$3) RETURNING id;`;
+      let values = [address, address.substring(address.length-2)];
+      values.push(votingDistrict);
+      client.query(SQL,values, (error,result) =>{
+        console.log('error', error);
+        representatives.forEach(rep =>{
+          rep.save(result.rows[0].id, values[1], values[2])
+        })
+      })
+    }
+    else{
+      return result.rows[0].id;
+    }
+  });
+}
 
 function Contributor(data) {
   this.name = data['@attributes'].org_name;
@@ -132,7 +162,32 @@ function chosenRepresentative(obj) {
       const starRep = obj.response.legislator.find(rep => {
         return rep['@attributes'].firstlast===results.rows[0].politician;
       })
+      console.log('chosenRepresentative returning: ', starRep);
       return starRep;
+    })
+}
+
+function retrieveLatestVotePositions(id){
+  console.log('In retrieveLatestVotePositions with id: ', id);
+  let SQL = 'SELECT propublica_id FROM politicianinfo WHERE id =$1';
+  let values = [id];
+  console.log('using SQL query: ',SQL);
+  return client.query(SQL, values)
+    .then( results=>{
+      console.log('this should be the propublica_id: ',results.rows[0].propublica_id);
+      let URL = `https://api.propublica.org/congress/v1/members/${results.rows[0].propublica_id}/votes.json`;
+      return superagent.get(URL)
+        .set('X-API-Key', `${process.env.PROPUBLICA_API_KEY}`)
+        .then(result =>{
+          let rawVoteResults = result.body.results[0].votes;
+          // console.log('results of propublica API: ',result.body.results[0].votes);
+          let voteHistoryArray = [];
+          rawVoteResults.forEach( vote =>{
+            voteHistoryArray.push({'description':vote.description, 'position':vote.position});
+          })
+          // console.log('array to be returned: ',voteHistoryArray)
+          return voteHistoryArray;
+        })
     })
 }
 
@@ -156,13 +211,20 @@ app.post('/representatives', (request, response) =>{
   }
   getRepresentatives(userAddress)
     .then (results =>{
-      let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
-      let resultValues = [results.districtPair.stateDistrict];
-      client.query(getResults, resultValues, (error, result)=> {
-        response.render('./pages/representatives.ejs', {value: result.rows});
-      })
+      pauseHack(500)
+        .then( () =>{
+          let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
+          let resultValues = [results.districtPair.stateDistrict];
+          client.query(getResults, resultValues, (error, result)=> {
+            response.render('./pages/representatives.ejs', {value: result.rows});
+          })
+        })
     })
 });
+
+function pauseHack (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
 
 function getRepresentatives(address) {
   let URL = `https://www.googleapis.com/civicinfo/v2/representatives?key=${process.env.GOOGLE_CIVIC_API_KEY}&address=${address}`
@@ -327,32 +389,6 @@ function findProPublicaID(role,state,official_office){
       console.log('results of propublica API: ',result.body.results[0].id);
       return result.body.results[0].id;
     })
-}
-
-function saveDistrictandReps(address, district, representatives){
-  let votingDistrict = district;
-  let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
-  client.query(SQL, (error, result) =>{
-    if(error){
-      console.log(error);
-    }
-    else if(!result.rowCount){
-      SQL = `INSERT INTO votingdistricts
-            (address,state,voting_district)
-            VALUES($1,$2,$3) RETURNING id;`;
-      let values = [address, address.substring(address.length-2)];
-      values.push(votingDistrict);
-      client.query(SQL,values, (error,result) =>{
-        console.log('error', error);
-        representatives.forEach(rep =>{
-          rep.save(result.rows[0].id, values[1], values[2])
-        })
-      })
-    }
-    else{
-      return result.rows[0].id;
-    }
-  });
 }
 
 function filterRelevantOffices(officeArray){
