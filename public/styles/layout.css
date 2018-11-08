@@ -73,16 +73,15 @@ nav ul li{
   width: 90%;
 }
 
+.hidden {
+  display: none;
+}
 #repdeck{
   display:flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
-
-
-
-
 
 
 .card{
