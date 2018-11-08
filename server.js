@@ -24,8 +24,6 @@ function errorHandler (error, response) {
 
 app.set('view engine', 'ejs');
 
-
-
 app.get('/', (request, response) => {
   response.render('../views/index.ejs');
 });
@@ -79,7 +77,7 @@ let doSomething = (id) => {
                     contributorArray.push(contributor);
                   }
 
-                  console.log(contributorArray);
+                  //console.log(contributorArray);
                   let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url, id FROM politicianinfo WHERE id=$1';
                   let repValues = [chosenID];
                   let repNameRoleAfflicaitonArray = [];
@@ -100,7 +98,7 @@ let doSomething = (id) => {
                         vote: contributorArray,
                         //voteHistory: voteHistoryArray
                       }
-                    });//this is what I need to feed into my ejs page
+                    });
 
                 });
             })
@@ -151,6 +149,7 @@ app.post('/representatives', (request, response) =>{
   let userAddress = '';
   if(request.body.address){
     userAddress = request.body.address.join('%20').split(' ').join('%20');
+    console.log(userAddress);
   }
   else{
     userAddress = request.body.zip.split(' ').join('%20');
