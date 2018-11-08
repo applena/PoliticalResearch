@@ -80,7 +80,7 @@ let doSomething = (id) => {
                   }
 
                   console.log(contributorArray);
-                  let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url FROM politicianinfo WHERE id=$1';
+                  let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url, id FROM politicianinfo WHERE id=$1';
                   let repValues = [chosenID];
                   let repNameRoleAfflicaitonArray = [];
                   
@@ -90,11 +90,13 @@ let doSomething = (id) => {
                       repNameRoleAfflicaitonArray.push(results.rows[0].role);
                       repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
                       repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
+                      repNameRoleAfflicaitonArray.push(results.rows[0].id);
         
                       return {name: repNameRoleAfflicaitonArray[0], 
                         political_affiliation: repNameRoleAfflicaitonArray[2], 
                         role: repNameRoleAfflicaitonArray[1], 
                         image_url: repNameRoleAfflicaitonArray[3],
+                        id: repNameRoleAfflicaitonArray[4],
                         vote: contributorArray
                       }
                     });//this is what I need to feed into my ejs page
