@@ -25,6 +25,7 @@ function errorHandler (error, response) {
 app.set('view engine', 'ejs');
 
 
+
 app.get('/', (request, response) => {
   response.render('../views/index.ejs');
 });
@@ -33,55 +34,81 @@ app.get('/checkvoter', (request, response)=> {
   response.render('./pages/checkvoter.ejs');
 });
 
-app.get('/loadrep/:id', (request, response) => {
-  chosenID = request.params.id;
+app.get('/loadrep/:id', (request,response) => {
+  doSomething(request.params.id)
+    .then( stuff => {
+      response.render('pages/individualrep.ejs', {value:stuff});
+    })
+});
+
+app.get('/data/:id', (request, response) => {
+  doSomething(request.params.id)
+    .then( stuff => {
+      console.log(stuff);
+      response.json(stuff);
+    });
+})
+
+let doSomething = (id) => {
+
+  chosenID = id;
+
   let SQL = 'SELECT state FROM politicianinfo WHERE id=$1';
   let values = [chosenID];
+  let contributorArray=[]; //this array holds the doners and the totals
 
-  client.query(SQL, values, (error, result) => {
-    let state = result.rows[0].state;
-    let contributorArray=[]; //this array holds the doners and the totals
+  return client.query(SQL, values)
 
-    //gets the funding info
-    getAllRepsByState(state)
-      .then (reps => {
-        chosenRepresentative(reps)
-          .then(starRep => {
-            let repCid = starRep['@attributes'].cid;
-            let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
-            return superagent.get(URL)
-              .then(result => {
-                let contributors = JSON.parse(result.text);
-                let contributorObjectArray = contributors.response.contributors.contributor;
-                for(let i=0; i<contributorObjectArray.length; i++){
-                  let contributor = new Contributor(contributorObjectArray[i]);
-                  contributorArray.push(contributor);
-                }
-                return contributorArray;
-              });
-          })
-        console.log(contributorArray);
-        let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url FROM politicianinfo WHERE id=$1';
-        let repValues = [chosenID];
-        let repNameRoleAfflicaitonArray = [];
-        client.query(repNameRoleQuery, repValues) 
-          .then (results => {
-            repNameRoleAfflicaitonArray.push(results.rows[0].politician);
-            repNameRoleAfflicaitonArray.push(results.rows[0].role);
-            repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
-            repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
+    .then( result =>  {
 
-            response.render('pages/individualrep.ejs', {value: 
-              {name: repNameRoleAfflicaitonArray[0], 
-                political_affiliation: repNameRoleAfflicaitonArray[2], 
-                role: repNameRoleAfflicaitonArray[1], 
-                image_url: repNameRoleAfflicaitonArray[3],
-                vote: contributorArray}});//this is what I need to feed into my ejs page
-          })
-          .catch( err => console.log(err))
-      });
-  })
-});
+      let state = result.rows[0].state;
+
+      //gets the funding info
+      return getAllRepsByState(state)
+        .then (reps => {
+          return chosenRepresentative(reps)
+            .then(starRep => {
+              let repCid = starRep['@attributes'].cid;
+              let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
+              return superagent.get(URL)
+                .then(result => {
+                  let contributors = JSON.parse(result.text);
+                  let contributorObjectArray = contributors.response.contributors.contributor;
+                  for(let i=0; i<contributorObjectArray.length; i++){
+                    let contributor = new Contributor(contributorObjectArray[i]);
+                    contributorArray.push(contributor);
+                  }
+
+                  console.log(contributorArray);
+                  let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url, id FROM politicianinfo WHERE id=$1';
+                  let repValues = [chosenID];
+                  let repNameRoleAfflicaitonArray = [];
+                  
+                  return client.query(repNameRoleQuery, repValues) 
+                    .then (results => {
+                      repNameRoleAfflicaitonArray.push(results.rows[0].politician);
+                      repNameRoleAfflicaitonArray.push(results.rows[0].role);
+                      repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
+                      repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
+                      repNameRoleAfflicaitonArray.push(results.rows[0].id);
+        
+                      return {name: repNameRoleAfflicaitonArray[0], 
+                        political_affiliation: repNameRoleAfflicaitonArray[2], 
+                        role: repNameRoleAfflicaitonArray[1], 
+                        image_url: repNameRoleAfflicaitonArray[3],
+                        id: repNameRoleAfflicaitonArray[4],
+                        vote: contributorArray
+                      }
+                    });//this is what I need to feed into my ejs page
+
+                });
+            })
+
+        })
+        .catch( err => console.log(err))
+    });
+
+};
 
 function Contributor(data) {
   this.name = data['@attributes'].org_name;
@@ -90,50 +117,25 @@ function Contributor(data) {
 
 function getAllRepsByState(state) {
   let URL = `http://www.opensecrets.org/api/?method=getLegislators&id=${state}&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
-  //console.log(URL);
   return superagent.get(URL)
     .then(results =>{
-      // console.log(results);
       const reps = JSON.parse(results.text);
-      //console.log(reps);
       return reps;
-      // chosenRepresentative(reps)
-      //   .then( result => {
-      //     return result;
-      //   })
     })
     .catch(error => errorHandler(error));
 }
 
 function chosenRepresentative(obj) {
-  // console.log('within chosenrepresentatives');
   let SQL = 'SELECT politician FROM politicianinfo WHERE id=$1';
-  //console.log(chosenID);
   let values = [chosenID];
   return client.query(SQL, values)
     .then (results => {
-      // console.log(results);
-      //console.log(results.rows[0].politician);
       const starRep = obj.response.legislator.find(rep => {
         return rep['@attributes'].firstlast===results.rows[0].politician;
       })
       return starRep;
     })
-    // console.log('star rep ', starRep);
 }
-
-// app.get('/loadrep/:id', (request, response) => {
-//   let {id} = request.params; //params is an object in the request object that stores anything in the url that is followed by a : as a key (in this case, let {id} = request.params is the same as just using request.params.id)
-//   let SQL = `SELECT * FROM reps WHERE id=${id}`; // need to verify the correct table
-//   client.query(SQL, (error, result) =>{
-//     if(!error){
-//       let representative = result.rows[0];
-//       response.render('/pages/individualrep.ejs', {value: representative});
-//     } else{
-//       response.redirect('./pages/error.ejs');
-//     }
-//   })
-//})
 
 app.get('/about', (request, response) =>{
   response.render('./pages/about.ejs');
@@ -145,7 +147,6 @@ app.listen(PORT, () => {
 });
 
 app.post('/representatives', (request, response) =>{
-  //console.log(request.body);
   let userAddress = '';
   if(request.body.address){
     userAddress = request.body.address.join('%20').split(' ').join('%20');
@@ -153,29 +154,20 @@ app.post('/representatives', (request, response) =>{
   else{
     userAddress = request.body.zip.split(' ').join('%20');
   }
-  console.log(userAddress);
   getRepresentatives(userAddress)
-    .then (results => {
-      //console.log(results);
+    .then (results =>{
       let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
       let resultValues = [results.districtPair.stateDistrict];
       client.query(getResults, resultValues, (error, result)=> {
-        //console.log(result);
-        //console.log(error);
         response.render('./pages/representatives.ejs', {value: result.rows});
-        //console.log(result.rows);
       })
     })
-
 });
 
 function getRepresentatives(address) {
-  // console.log('in loadClient');
   let URL = `https://www.googleapis.com/civicinfo/v2/representatives?key=${process.env.GOOGLE_CIVIC_API_KEY}&address=${address}`
-  // console.log(URL);
   return superagent.get(URL)
     .then(results =>{
-      //console.log(results);
       let relevantOffices = filterRelevantOffices(results.body.offices);
       let districtArray = ['',''];
       relevantOffices.forEach(office =>{
@@ -207,21 +199,22 @@ function getRepresentatives(address) {
         else{
           roleName += 'Representative';
         }
+        let office = relevantOffices[index].name;
         relevantOffices[index].officialIndices.forEach(index =>{
-          relevantIndicesAndRoles.push({'role': roleName, 'index': index})
+          relevantIndicesAndRoles.push({'role': roleName, 'office': office, 'index': index})
         })
       }
       let relevantPoliticians = [];
       relevantIndicesAndRoles.forEach( indexPair =>{
         relevantPoliticians.push(results.body.officials[indexPair.index]);
         relevantPoliticians[relevantPoliticians.length-1].role = indexPair.role;
+        relevantPoliticians[relevantPoliticians.length-1].office = indexPair.office;
       });
       const reps = relevantPoliticians.map( person =>{
         const rep = new Representative(person);
         return rep;
       });
       saveDistrictandReps(address,districtPair.stateDistrict,reps)
-      //console.log({'reps': reps, 'districtPair': districtPair})
       return {'reps': reps, 'districtPair': districtPair};
     })
 }
@@ -232,7 +225,6 @@ function UserDistricts(districts){
 }
 
 UserDistricts.prototype.save = function(address){
-  //console.log('address', address);
   let votingDistrict = Object.entries(this)[1][1];
   let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
   client.query(SQL, (error, result) =>{
@@ -246,14 +238,10 @@ UserDistricts.prototype.save = function(address){
       let values = [address, address.substring(address.length-2)];
       values.push(Object.entries(this)[1][1]);
       client.query(SQL,values, (error,result) =>{
-        console.log('error', error);
-        //console.log('result',result);
         return result.rows[0].id;
       })
     }
     else{
-      //console.log('voting district found, ID:');
-      //console.log(result.rows[0].id);
       return result.rows[0].id;
     }
   });
@@ -288,17 +276,57 @@ function Representative(data){
   else{
     this.website_url = 'No website URL found.';
   }
+  if(data.office){
+    this.officialOffice = data.office;
+  }
+  else{
+    this.officialOffice = 'No official office';
+  }
 }
 
 Representative.prototype.save = function(id, stateAbbreviation, votingDistrict){
   let SQL = `INSERT INTO politicianinfo
-    (politician,role,image_url,affiliation,contact_phone,contact_address,website,voting_district_id,state,voting_district)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING politician;`;
+    (politician,role,image_url,affiliation,contact_phone,contact_address,website,official_office,voting_district_id,state,voting_district,propublica_id)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);`;
   let values = Object.values(this);
   values.push(id);
   values.push(stateAbbreviation);
   values.push(votingDistrict);
-  client.query(SQL,values);
+  if(/Federal/.test(values[1])){
+    //Grab propublica ID
+    findProPublicaID(values[1],values[9],values[7])
+      .then( (result) =>{
+        values.push(result);
+        client.query(SQL, values);
+      })
+      .catch( () =>{
+        values.push('No ProPublica ID');
+        client.query(SQL, values);
+      })
+  }
+  else{
+    values.push('No ProPublica ID')
+    client.query(SQL, values);
+  }
+}
+
+function findProPublicaID(role,state,official_office){
+  let URL = `https://api.propublica.org/congress/v1/members/`;
+  if(role.split(' ')[1] === 'Senator'){
+    URL += `senate/${state}/current.json`;
+  }
+  else{
+    URL += `house/${state}/`
+    URL += `${official_office.substring(official_office.length-2)}`
+    URL += `/current.json`;
+  }
+  console.log('Attempting to use the API req URL:', URL);
+  return superagent.get(URL)
+    .set('X-API-Key', `${process.env.PROPUBLICA_API_KEY}`)
+    .then(result =>{
+      console.log('results of propublica API: ',result.body.results[0].id);
+      return result.body.results[0].id;
+    })
 }
 
 function saveDistrictandReps(address, district, representatives){
@@ -309,7 +337,6 @@ function saveDistrictandReps(address, district, representatives){
       console.log(error);
     }
     else if(!result.rowCount){
-      //console.log(result.rows);
       SQL = `INSERT INTO votingdistricts
             (address,state,voting_district)
             VALUES($1,$2,$3) RETURNING id;`;
@@ -317,15 +344,12 @@ function saveDistrictandReps(address, district, representatives){
       values.push(votingDistrict);
       client.query(SQL,values, (error,result) =>{
         console.log('error', error);
-        //console.log('result',result);
         representatives.forEach(rep =>{
           rep.save(result.rows[0].id, values[1], values[2])
         })
       })
     }
     else{
-      //console.log('voting district found, ID:');
-      //console.log(result.rows[0].id);
       return result.rows[0].id;
     }
   });

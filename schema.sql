@@ -5,6 +5,7 @@ DROP TABLE if EXISTS politicianfunding;
 DROP TABLE if EXISTS candidatedata;
 DROP TABLE if EXISTS issuemap;
 DROP TABLE if EXISTS politicianinfo;
+-- DROP TABLE if EXISTS funding;
 
 DROP TABLE if EXISTS votingdistricts;
 
@@ -20,6 +21,7 @@ CREATE TABLE politicianinfo(
    id SERIAL,
    state TEXT,
    voting_district TEXT,
+   official_office TEXT,
    politician TEXT,
    role TEXT,
    image_url TEXT,
@@ -30,6 +32,12 @@ CREATE TABLE politicianinfo(
    propublica_id TEXT
    -- reelection_date DATE,
 );
+
+-- CREATE TABLE funding(
+--     id SERIAL PRIMARY KEY,
+--     name VARCHAR(255),
+--     total BIGINT
+-- )
 
 -- CREATE TABLE issuemap(
 --     issue_type INT,
