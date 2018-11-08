@@ -100,6 +100,7 @@ let doSomething = (id) => {
                             role: repNameRoleAfflicaitonArray[1],
                             image_url: repNameRoleAfflicaitonArray[3],
                             vote: contributorArray,
+                            id: chosenID,
                             voteHistory: voteResult
                           }
                         });//this is what I need to feed into my ejs page
