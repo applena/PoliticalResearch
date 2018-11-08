@@ -113,30 +113,30 @@ let doSomething = (id) => {
 
 };
 
-function saveDistrictandReps(address, district, representatives){
-  let votingDistrict = district;
+function saveDistrictandReps(address, districtPair, representatives){
+  let votingDistrict = districtPair.stateDistrict;
   let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
-  client.query(SQL, (error, result) =>{
-    if(error){
-      console.log(error);
-    }
-    else if(!result.rowCount){
-      SQL = `INSERT INTO votingdistricts
+  return client.query(SQL)
+    .then( result =>{
+      if(!result.rowCount){
+        SQL = `INSERT INTO votingdistricts
             (address,state,voting_district)
             VALUES($1,$2,$3) RETURNING id;`;
-      let values = [address, address.substring(address.length-2)];
-      values.push(votingDistrict);
-      client.query(SQL,values, (error,result) =>{
-        console.log('error', error);
-        representatives.forEach(rep =>{
-          rep.save(result.rows[0].id, values[1], values[2])
-        })
-      })
-    }
-    else{
-      return result.rows[0].id;
-    }
-  });
+        let values = [address, address.substring(address.length-2)];
+        values.push(votingDistrict);
+        return client.query(SQL, values)
+          .then(result =>{
+            //credit to Nicholas Carignan for showing us Promise.all and converting our forEach functionality to map in order to use it
+            return Promise.all(representatives.map(rep =>{
+              console.log('rep in saveDistrict: ',rep);
+              return rep.save(result.rows[0].id, values[1], values[2])
+            }))
+          })
+      }
+      else{
+        return result.rows[0].id;
+      }
+    });
 }
 
 function Contributor(data) {
@@ -209,15 +209,16 @@ app.post('/representatives', (request, response) =>{
   else{
     userAddress = request.body.zip.split(' ').join('%20');
   }
-  getRepresentatives(userAddress)
-    .then (results =>{
-      pauseHack(500)
-        .then( () =>{
-          let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
-          let resultValues = [results.districtPair.stateDistrict];
-          client.query(getResults, resultValues, (error, result)=> {
-            response.render('./pages/representatives.ejs', {value: result.rows});
-          })
+  //some issue with asynchrony
+  return getRepresentatives(userAddress)
+    .then (results => {
+      console.log(results.districtPair.stateDistrict);
+      let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
+      let resultValues = [results.districtPair.stateDistrict];
+      client.query(getResults, resultValues)
+        .then( result => {
+          console.log(result.rows);
+          response.render('./pages/representatives.ejs', {value: result.rows});
         })
     })
 });
@@ -273,11 +274,15 @@ function getRepresentatives(address) {
         relevantPoliticians[relevantPoliticians.length-1].office = indexPair.office;
       });
       const reps = relevantPoliticians.map( person =>{
+        console.log(person);
         const rep = new Representative(person);
         return rep;
       });
-      saveDistrictandReps(address,districtPair.stateDistrict,reps)
-      return {'reps': reps, 'districtPair': districtPair};
+      console.log('reps: ', reps);
+      return saveDistrictandReps(address,districtPair,reps)
+        .then( () =>{
+          return {'reps': reps, 'districtPair': districtPair};
+        })
     })
 }
 
@@ -349,27 +354,26 @@ function Representative(data){
 Representative.prototype.save = function(id, stateAbbreviation, votingDistrict){
   let SQL = `INSERT INTO politicianinfo
     (politician,role,image_url,affiliation,contact_phone,contact_address,website,official_office,voting_district_id,state,voting_district,propublica_id)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);`;
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *;`;
   let values = Object.values(this);
   values.push(id);
   values.push(stateAbbreviation);
   values.push(votingDistrict);
-  if(/Federal/.test(values[1])){
-    //Grab propublica ID
-    findProPublicaID(values[1],values[9],values[7])
-      .then( (result) =>{
-        values.push(result);
-        client.query(SQL, values);
-      })
-      .catch( () =>{
-        values.push('No ProPublica ID');
-        client.query(SQL, values);
-      })
-  }
-  else{
-    values.push('No ProPublica ID')
-    client.query(SQL, values);
-  }
+  return findProPublicaID(values[1],values[9],values[7])
+    .then( (result) =>{
+      values.push(result);
+      return client.query(SQL, values)
+        .then(result =>{
+          return result;
+        });
+    })
+    .catch( () =>{
+      values.push('No ProPublica ID');
+      return client.query(SQL, values)
+        .then(result =>{
+          return result;
+        });
+    })
 }
 
 function findProPublicaID(role,state,official_office){
@@ -386,8 +390,13 @@ function findProPublicaID(role,state,official_office){
   return superagent.get(URL)
     .set('X-API-Key', `${process.env.PROPUBLICA_API_KEY}`)
     .then(result =>{
-      console.log('results of propublica API: ',result.body.results[0].id);
-      return result.body.results[0].id;
+      console.log('results of propublica API: ',result.body);
+      if(!result.body.error){
+        return result.body.results[0].id;
+      }
+      else{
+        return 'No ProPublica ID';
+      }
     })
 }
 
