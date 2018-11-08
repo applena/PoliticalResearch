@@ -71,41 +71,69 @@ let doSomething = (id) => {
           console.log('reps:',reps);
           return chosenRepresentative(reps)
             .then(starRep => {
-              console.log('starRep: ',starRep)
-              let repCid = starRep['@attributes'].cid;
-              let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
-              return superagent.get(URL)
-                .then(result => {
-                  let contributors = JSON.parse(result.text);
-                  let contributorObjectArray = contributors.response.contributors.contributor;
-                  for(let i=0; i<contributorObjectArray.length; i++){
-                    let contributor = new Contributor(contributorObjectArray[i]);
-                    contributorArray.push(contributor);
-                  }
-                  return retrieveLatestVotePositions(chosenID)
-                    .then( (voteResult) =>{
-                      let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url FROM politicianinfo WHERE id=$1';
-                      let repValues = [chosenID];
-                      let repNameRoleAfflicaitonArray = [];
+              if(starRep){
+                console.log('starRep: ',starRep)
+                let repCid = starRep['@attributes'].cid;
+                let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
+                return superagent.get(URL)
+                  .then(result => {
+                    let contributors = JSON.parse(result.text);
+                    let contributorObjectArray = contributors.response.contributors.contributor;
+                    for(let i=0; i<contributorObjectArray.length; i++){
+                      let contributor = new Contributor(contributorObjectArray[i]);
+                      contributorArray.push(contributor);
+                    }
+                    return retrieveLatestVotePositions(chosenID)
+                      .then( (voteResult) =>{
+                        let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url FROM politicianinfo WHERE id=$1';
+                        let repValues = [chosenID];
+                        let repNameRoleAfflicaitonArray = [];
 
-                      return client.query(repNameRoleQuery, repValues)
-                        .then (results => {
-                          repNameRoleAfflicaitonArray.push(results.rows[0].politician);
-                          repNameRoleAfflicaitonArray.push(results.rows[0].role);
-                          repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
-                          repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
+                        return client.query(repNameRoleQuery, repValues)
+                          .then (results => {
+                            repNameRoleAfflicaitonArray.push(results.rows[0].politician);
+                            repNameRoleAfflicaitonArray.push(results.rows[0].role);
+                            repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
+                            repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
 
-                          return {name: repNameRoleAfflicaitonArray[0],
-                            political_affiliation: repNameRoleAfflicaitonArray[2],
-                            role: repNameRoleAfflicaitonArray[1],
-                            image_url: repNameRoleAfflicaitonArray[3],
-                            vote: contributorArray,
-                            id: chosenID,
-                            voteHistory: voteResult
-                          }
-                        });//this is what I need to feed into my ejs page
-                    })
-                });
+                            return {name: repNameRoleAfflicaitonArray[0],
+                              political_affiliation: repNameRoleAfflicaitonArray[2],
+                              role: repNameRoleAfflicaitonArray[1],
+                              image_url: repNameRoleAfflicaitonArray[3],
+                              vote: contributorArray,
+                              id: chosenID,
+                              voteHistory: voteResult
+                            }
+                          });//this is what I need to feed into my ejs page
+                      })
+                  });
+              }
+              else{
+                return retrieveLatestVotePositions(chosenID)
+                  .then( (voteResult) =>{
+                    console.log('voteResult of less known politician: ',voteResult)
+                    let repNameRoleQuery = 'SELECT politician, role, affiliation, image_url FROM politicianinfo WHERE id=$1';
+                    let repValues = [chosenID];
+                    let repNameRoleAfflicaitonArray = [];
+
+                    return client.query(repNameRoleQuery, repValues)
+                      .then (results => {
+                        repNameRoleAfflicaitonArray.push(results.rows[0].politician);
+                        repNameRoleAfflicaitonArray.push(results.rows[0].role);
+                        repNameRoleAfflicaitonArray.push(results.rows[0].affiliation);
+                        repNameRoleAfflicaitonArray.push(results.rows[0].image_url);
+
+                        return {name: repNameRoleAfflicaitonArray[0],
+                          political_affiliation: repNameRoleAfflicaitonArray[2],
+                          role: repNameRoleAfflicaitonArray[1],
+                          image_url: repNameRoleAfflicaitonArray[3],
+                          vote: contributorArray,
+                          id: chosenID,
+                          voteHistory: [{'description':'No voting history', 'position':''}]
+                        }
+                      });//this is what I need to feed into my ejs page
+                  })
+              }
             })
         })
         .catch( err => console.log(err))
@@ -155,10 +183,12 @@ function getAllRepsByState(state) {
 }
 
 function chosenRepresentative(obj) {
+  console.log('legislator in chosenRep: ',obj.response.legislator);
   let SQL = 'SELECT politician FROM politicianinfo WHERE id=$1';
   let values = [chosenID];
   return client.query(SQL, values)
     .then (results => {
+      console.log('results in chosenRepresentative: ',results);
       const starRep = obj.response.legislator.find(rep => {
         return rep['@attributes'].firstlast===results.rows[0].politician;
       })
@@ -169,25 +199,33 @@ function chosenRepresentative(obj) {
 
 function retrieveLatestVotePositions(id){
   console.log('In retrieveLatestVotePositions with id: ', id);
+  let voteHistoryArray = [{'description':'No voting history', 'position':''}];
   let SQL = 'SELECT propublica_id FROM politicianinfo WHERE id =$1';
   let values = [id];
   console.log('using SQL query: ',SQL);
   return client.query(SQL, values)
     .then( results=>{
       console.log('this should be the propublica_id: ',results.rows[0].propublica_id);
-      let URL = `https://api.propublica.org/congress/v1/members/${results.rows[0].propublica_id}/votes.json`;
-      return superagent.get(URL)
-        .set('X-API-Key', `${process.env.PROPUBLICA_API_KEY}`)
-        .then(result =>{
-          let rawVoteResults = result.body.results[0].votes;
-          // console.log('results of propublica API: ',result.body.results[0].votes);
-          let voteHistoryArray = [];
-          rawVoteResults.forEach( vote =>{
-            voteHistoryArray.push({'description':vote.description, 'position':vote.position});
+      if(results.rows && results.rows[0] && results.rows[0].propublica_id){
+        let URL = `https://api.propublica.org/congress/v1/members/${results.rows[0].propublica_id}/votes.json`;
+        return superagent.get(URL)
+          .set('X-API-Key', `${process.env.PROPUBLICA_API_KEY}`)
+          .then(result =>{
+            if(result.body && result.body.results){
+              voteHistoryArray = [];
+              let rawVoteResults = result.body.results[0].votes;
+              // console.log('results of propublica API: ',result.body.results[0].votes);
+              rawVoteResults.forEach( vote =>{
+                voteHistoryArray.push({'description':vote.description, 'position':vote.position});
+              })
+              // console.log('array to be returned: ',voteHistoryArray)
+              return voteHistoryArray;
+            }
           })
-          // console.log('array to be returned: ',voteHistoryArray)
-          return voteHistoryArray;
-        })
+      }
+      else{
+        return voteHistoryArray;
+      }
     })
 }
 
@@ -221,10 +259,6 @@ app.post('/representatives', (request, response) =>{
         })
     })
 });
-
-function pauseHack (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
 
 function getRepresentatives(address) {
   let URL = `https://www.googleapis.com/civicinfo/v2/representatives?key=${process.env.GOOGLE_CIVIC_API_KEY}&address=${address}`
