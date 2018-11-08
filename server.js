@@ -169,25 +169,30 @@ function chosenRepresentative(obj) {
 
 function retrieveLatestVotePositions(id){
   console.log('In retrieveLatestVotePositions with id: ', id);
+  let voteHistoryArray = [];
   let SQL = 'SELECT propublica_id FROM politicianinfo WHERE id =$1';
   let values = [id];
   console.log('using SQL query: ',SQL);
   return client.query(SQL, values)
     .then( results=>{
       console.log('this should be the propublica_id: ',results.rows[0].propublica_id);
-      let URL = `https://api.propublica.org/congress/v1/members/${results.rows[0].propublica_id}/votes.json`;
-      return superagent.get(URL)
-        .set('X-API-Key', `${process.env.PROPUBLICA_API_KEY}`)
-        .then(result =>{
-          let rawVoteResults = result.body.results[0].votes;
-          // console.log('results of propublica API: ',result.body.results[0].votes);
-          let voteHistoryArray = [];
-          rawVoteResults.forEach( vote =>{
-            voteHistoryArray.push({'description':vote.description, 'position':vote.position});
+      if(results.rows && results.rows[0] && results.rows[0].propublica_id){
+        let URL = `https://api.propublica.org/congress/v1/members/${results.rows[0].propublica_id}/votes.json`;
+        return superagent.get(URL)
+          .set('X-API-Key', `${process.env.PROPUBLICA_API_KEY}`)
+          .then(result =>{
+            let rawVoteResults = result.body.results[0].votes;
+            // console.log('results of propublica API: ',result.body.results[0].votes);
+            rawVoteResults.forEach( vote =>{
+              voteHistoryArray.push({'description':vote.description, 'position':vote.position});
+            })
+            // console.log('array to be returned: ',voteHistoryArray)
+            return voteHistoryArray;
           })
-          // console.log('array to be returned: ',voteHistoryArray)
-          return voteHistoryArray;
-        })
+      }
+      else{
+        return {'description':'No voting history', 'position':''};
+      }
     })
 }
 
@@ -222,10 +227,6 @@ app.post('/representatives', (request, response) =>{
         })
     })
 });
-
-function pauseHack (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
 
 function getRepresentatives(address) {
   let URL = `https://www.googleapis.com/civicinfo/v2/representatives?key=${process.env.GOOGLE_CIVIC_API_KEY}&address=${address}`
