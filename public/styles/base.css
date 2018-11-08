@@ -20,10 +20,6 @@ header {
 }
 
 
-nav ul li{
-display: none;
-}
-
 /*-------    sub-header    --------*/
 
 
@@ -69,7 +65,6 @@ display: none;
 
 .deck form fieldset{
   width: 100%;
-  overflow: scroll;
 }
 
 #repcard *{
@@ -161,6 +156,7 @@ form{
   overflow: scroll;
   background-color: white;
   width: 15em;
+  background-color: #f3f3f3;
   color: rgb(150, 149, 149);
   margin-top: .5em;
 }
