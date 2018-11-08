@@ -30,6 +30,15 @@
     <div id="funding-chart">
         <canvas id="fundingChart"></canvas>
     </div>
+    <div class="deck" id="voting-history">
+        <div class="deck" id="voting-history">
+            <p>Recent Voting History:</p>
+            <% value.voteHistory.forEach(vote => { %>
+              <h3><%= vote.description %></h3>
+              <p><%= vote.position%></p>
+            <% }) %>
+          </div>
+    </div>
   </main>
   <%- include ../partials/footer.ejs %>
 </body>
