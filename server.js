@@ -37,16 +37,16 @@ app.get('/loadrep/:id', (request,response) => {
   chosenID = request.params.id;
   doSomething(chosenID)
     .then( stuff => {
-      console.log('stuff from doSomething on /loadrep/: ', stuff);
+      //console.log('stuff from doSomething on /loadrep/: ', stuff);
       response.render('pages/individualrep.ejs', {value:stuff});
     })
 });
 
 app.get('/data/:id', (request, response) => {
-  console.log('hitting data')
+  //console.log('hitting data')
   doSomething(chosenID)
     .then( stuff => {
-      console.log('stuff from doSomething on /data/: ', stuff);
+      //console.log('stuff from doSomething on /data/: ', stuff);
       response.json(stuff);
     });
 })
@@ -58,7 +58,7 @@ let doSomething = (id) => {
   let SQL = 'SELECT state FROM politicianinfo WHERE id=$1';
   let values = [chosenID];
   let contributorArray=[]; //this array holds the doners and the totals
-  console.log('chosenID: ', chosenID);
+  //console.log('chosenID: ', chosenID);
   return client.query(SQL, values)
 
     .then( result => {
@@ -68,11 +68,11 @@ let doSomething = (id) => {
       //gets the funding info
       return getAllRepsByState(state)
         .then (reps => {
-          console.log('reps:',reps);
+          //console.log('reps:',reps);
           return chosenRepresentative(reps)
             .then(starRep => {
               if(starRep){
-                console.log('starRep: ',starRep)
+                //console.log('starRep: ',starRep)
                 let repCid = starRep['@attributes'].cid;
                 let URL = `https://www.opensecrets.org/api/?method=candContrib&cid=${repCid}&cycle=2018&apikey=${process.env.OPEN_SECRETS_API_KEY}&output=json`;
                 return superagent.get(URL)
@@ -141,31 +141,31 @@ let doSomething = (id) => {
 
 };
 
-function saveDistrictandReps(address, districtPair, representatives){
-  let votingDistrict = districtPair.stateDistrict;
-  let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
-  return client.query(SQL)
-    .then( result =>{
-      if(!result.rowCount){
-        SQL = `INSERT INTO votingdistricts
-            (address,state,voting_district)
-            VALUES($1,$2,$3) RETURNING id;`;
-        let values = [address, address.substring(address.length-2)];
-        values.push(votingDistrict);
-        return client.query(SQL, values)
-          .then(result =>{
-            //credit to Nicholas Carignan for showing us Promise.all and converting our forEach functionality to map in order to use it
-            return Promise.all(representatives.map(rep =>{
-              console.log('rep in saveDistrict: ',rep);
-              return rep.save(result.rows[0].id, values[1], values[2])
-            }))
-          })
-      }
-      else{
-        return result.rows[0].id;
-      }
-    });
-}
+// function saveDistrictandReps(address, state, districtPair, representatives){
+//   //console.log('the address is ', address, 'the state is ', state);
+//   let votingDistrict = districtPair.stateDistrict;
+//   let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
+//   return client.query(SQL)
+//     .then( result => {
+//       if(!result.rowCount){
+//         SQL = `INSERT INTO votingdistricts
+//             (address,state,voting_district)
+//             VALUES($1,$2,$3) RETURNING id;`;
+//         let values = [address, state];
+//         values.push(votingDistrict);
+//         return client.query(SQL, values)
+//           .then(result =>{
+//             return Promise.all(representatives.map(rep =>{
+//               //console.log('rep in saveDistrict: ',rep);
+//               return rep.save(result.rows[0].id, values[1], values[2])
+//             }))
+//           })
+//       }
+//       else{
+//         return result.rows[0].id;
+//       }
+//     });
+// }
 
 function Contributor(data) {
   this.name = data['@attributes'].org_name;
@@ -183,29 +183,29 @@ function getAllRepsByState(state) {
 }
 
 function chosenRepresentative(obj) {
-  console.log('legislator in chosenRep: ',obj.response.legislator);
+  //console.log('legislator in chosenRep: ',obj.response.legislator);
   let SQL = 'SELECT politician FROM politicianinfo WHERE id=$1';
   let values = [chosenID];
   return client.query(SQL, values)
     .then (results => {
-      console.log('results in chosenRepresentative: ',results);
+      //console.log('results in chosenRepresentative: ',results);
       const starRep = obj.response.legislator.find(rep => {
         return rep['@attributes'].firstlast===results.rows[0].politician;
       })
-      console.log('chosenRepresentative returning: ', starRep);
+      //console.log('chosenRepresentative returning: ', starRep);
       return starRep;
     })
 }
 
 function retrieveLatestVotePositions(id){
-  console.log('In retrieveLatestVotePositions with id: ', id);
+  //console.log('In retrieveLatestVotePositions with id: ', id);
   let voteHistoryArray = [{'description':'No voting history', 'position':''}];
   let SQL = 'SELECT propublica_id FROM politicianinfo WHERE id =$1';
   let values = [id];
-  console.log('using SQL query: ',SQL);
+  //console.log('using SQL query: ',SQL);
   return client.query(SQL, values)
     .then( results=>{
-      console.log('this should be the propublica_id: ',results.rows[0].propublica_id);
+      //console.log('this should be the propublica_id: ',results.rows[0].propublica_id);
       if(results.rows && results.rows[0] && results.rows[0].propublica_id){
         let URL = `https://api.propublica.org/congress/v1/members/${results.rows[0].propublica_id}/votes.json`;
         return superagent.get(URL)
@@ -238,38 +238,39 @@ app.listen(PORT, () => {
 });
 
 app.post('/representatives', (request, response) =>{
-  let userAddress = '';
-  if(request.body.address){
-    userAddress = request.body.address.join('%20').split(' ').join('%20');
-    console.log(userAddress);
-  }
-  else{
-    userAddress = request.body.zip.split(' ').join('%20');
-  }
-  //some issue with asynchrony
-  return getRepresentatives(userAddress)
+  //console.log(request.body.address);
+  let userAddress = request.body.street +' '+ request.body.city;
+  let userState = request.body.state;
+
+  return getRepresentatives(userAddress, userState)
     .then (results => {
-      console.log(results.districtPair.stateDistrict);
-      let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
-      let resultValues = [results.districtPair.stateDistrict];
-      client.query(getResults, resultValues)
-        .then( result => {
-          console.log(result.rows);
-          response.render('./pages/representatives.ejs', {value: result.rows});
-        })
+      //console.log(results.reps);
+      //results is the array of rep objects and the district
+      response.render('./pages/representatives.ejs', {value: {reps: results.reps}, district: results.UserDistricts});
+      // let getResults = `SELECT * FROM politicianinfo WHERE voting_district=$1`;
+      // let resultValues = [results.districtPair.stateDistrict];
+      // client.query(getResults, resultValues)
+      //   .then( result => {
+      //     //console.log(result.rows);
+      //   })
     })
+    .catch (error => {console.error(error)});
 });
 
-function getRepresentatives(address) {
-  let URL = `https://www.googleapis.com/civicinfo/v2/representatives?key=${process.env.GOOGLE_CIVIC_API_KEY}&address=${address}`
+function getRepresentatives(address, state) {
+  let newAddress = encodeURI(address);
+  let URL = `https://www.googleapis.com/civicinfo/v2/representatives?key=${process.env.GOOGLE_CIVIC_API_KEY}&address=${newAddress}+${state}`
+
   return superagent.get(URL)
     .then(results =>{
       let relevantOffices = filterRelevantOffices(results.body.offices);
       let districtArray = ['',''];
       relevantOffices.forEach(office =>{
+        //sets the [0] term in districtArray to US House
         if(/United States House/.test(office.name)){
           districtArray[0] = office.name.substring(office.name.length-5);
         }
+        //if this is a state rep put in district Array as the second term
         if(/State /.test(office.name)){
           let stateDistrictArray = office.name.split(' ');
           let concatArray = [];
@@ -306,25 +307,32 @@ function getRepresentatives(address) {
         relevantPoliticians[relevantPoliticians.length-1].role = indexPair.role;
         relevantPoliticians[relevantPoliticians.length-1].office = indexPair.office;
       });
-      const reps = relevantPoliticians.map( person =>{
-        console.log(person);
+      
+      //creates the arrary of representatives objects
+      const reps = relevantPoliticians.map( person => {
         const rep = new Representative(person);
+        //console.log(rep);
         return rep;
       });
-      console.log('reps: ', reps);
-      return saveDistrictandReps(address,districtPair,reps)
-        .then( () =>{
-          return {'reps': reps, 'districtPair': districtPair};
-        })
+
+      return {'reps': reps, 'districtPair': districtPair};
+      
+      // return saveDistrictandReps(address, state, districtPair,reps)
+      //   .then( () =>{
+      //     console.log({'reps': reps, 'districtPair': districtPair});
+      //     return {'reps': reps, 'districtPair': districtPair};
+      //   })
     })
+    .catch(error => {console.error(error)});
 }
 
+//gives a variable to our federal and state district
 function UserDistricts(districts){
   this.federalDistrict = districts[0];
   this.stateDistrict = districts[1];
 }
 
-UserDistricts.prototype.save = function(address){
+UserDistricts.prototype.save = function(address, state){
   let votingDistrict = Object.entries(this)[1][1];
   let SQL = `SELECT * FROM votingdistricts WHERE voting_district = '${votingDistrict}';`;
   client.query(SQL, (error, result) =>{
@@ -335,7 +343,7 @@ UserDistricts.prototype.save = function(address){
       SQL = `INSERT INTO votingdistricts
             (address,state,voting_district)
             VALUES($1,$2,$3);`;
-      let values = [address, address.substring(address.length-2)];
+      let values = [address, state];
       values.push(Object.entries(this)[1][1]);
       client.query(SQL,values, (error,result) =>{
         return result.rows[0].id;
@@ -419,11 +427,11 @@ function findProPublicaID(role,state,official_office){
     URL += `${official_office.substring(official_office.length-2)}`
     URL += `/current.json`;
   }
-  console.log('Attempting to use the API req URL:', URL);
+  //console.log('Attempting to use the API req URL:', URL);
   return superagent.get(URL)
     .set('X-API-Key', `${process.env.PROPUBLICA_API_KEY}`)
     .then(result =>{
-      console.log('results of propublica API: ',result.body);
+      //console.log('results of propublica API: ',result.body);
       if(!result.body.error){
         return result.body.results[0].id;
       }
