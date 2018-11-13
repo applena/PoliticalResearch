@@ -1,6 +1,7 @@
 'use strict';
 
 const async = require('async');
+const cache = require('./cache/index');
 const getRepresentatives = require('./lib/getRepresentatives');
 const express = require('express');
 const cors = require('cors');
@@ -8,7 +9,8 @@ const cors = require('cors');
 const getPropublicaIds = require('./lib/getPropublicaIds');
 const getAllRepsByState = require('./lib/getAllRepsByState');
 const getFundingInformation = require('./lib/getFundingInformation');
-const getVotingRecord = require('./lib/getVotingRecord');
+const retrieveLatestVotePositions = require('./lib/retrieveLatestVotePositions');
+const constructTheDetailPageObject = require('./lib/constructTheDetailPageObject');
 require('dotenv').config();
 let chosenID;
 
@@ -84,34 +86,28 @@ app.post('/representatives', (request, response) =>{
     let federalNumber = results[0].districtPair.federalNumber;//federal house
     let propublicaList = results[1];
     let opensecretsList = results[2];
-
-    repsList.forEach(rep => {
-      if((/federal/i).test(rep.role)){
-        console.log('🏳‍🌈 GETTING INTO THE PROPUBLIA LOGIC');
-
-        //call propublica api to get federal house reps
-        getPropublicaIds('house', userState, federalNumber)
-          .then (results => {
-            propublicaList = propublicaList.concat(results[0]);
-            //console.log('PROPUBLICA LIST BEFORE GOING THROUGH MAP ', propublicaList);
-
-            //puts the propublica national rep id into the rep data object
-            repsList.map(rep => {
-              let propublicaRep = propublicaList.find(value => {
-                return value.name === rep.name
-              })
-              if(!propublicaRep){
-                console.error(rep.name, 'no propublica record');
-              }
-              rep.propublica_id = propublicaRep.id;
-            //console.log('this is the rep propublica id ', rep.propublica_id);
+    
+    //call propublica api to get federal house reps
+    getPropublicaIds('house', userState, federalNumber)
+      .then (results => {
+        propublicaList = propublicaList.concat(results[0]);
+      
+        //puts the propublica national rep id into the rep data object
+        repsList.map(rep => {
+          if((/federal/i).test(rep.role)){
+            let propublicaRep = propublicaList.find(value => {
+              return value.name === rep.name
             })
-          })
-          .catch (console.log(error));
-      }
-    })
+            if(!propublicaRep){
+              console.error(rep.name, 'no propublica record');
+            }
+            rep.propublica_id = propublicaRep.id;
+          }
+        })
+      })
+      .catch (console.log(error));
+    
 
-    console.log('LOOKING FOR PROPUBLIA ID ON THIS LIST ', repsList);
     //combine all opensecrets data
     //puts the open secrets rep id into the rep data object
     repsList.map(rep => {
@@ -120,10 +116,8 @@ app.post('/representatives', (request, response) =>{
       })
       if(!opensecretRep){console.error('rep not found in opensecrets', rep.name)} else {
         rep.opensecrets_id = opensecretRep['@attributes'].cid;
-        console.log('this is the open secrets id ', rep.opensecrets_id);
       }
     })
-    console.log('LOOKING FOR OPEN SECRETES ID ON THIS LIST ', repsList);
   
     //renders the representatives page
     response.render('./pages/representatives.ejs', {
@@ -137,7 +131,8 @@ app.post('/representatives', (request, response) =>{
 
 app.get('/loadrep/:id', (request,response) => {
   console.log('hitting loadrep');
-  chosenID = request.params.id;
+  let chosenID = request.params.id;
+  let chosenRep = cache.reps[chosenID];
 
   async.parallel([
     function(callback) {
@@ -150,35 +145,40 @@ app.get('/loadrep/:id', (request,response) => {
           callback(error);
         })
     },
-
     function(callback) {
       console.log('hitting get voting Info');
-      getVotingRecord(chosenID)
+      retrieveLatestVotePositions(chosenRep.propublica_id)
         .then (results => {
-          callback(null, results); // results[0] in parallel complete handler
+          callback(null, results); // results[1] in parallel complete handler
         })
         .catch (error => {
           callback(error);
         })
-    },
-
-    function(error, results) { // parallel complete handler
-      console.log('the results from the parallel function ', results);
-      response.render('pages/individualrep.ejs', {value:results});
     }
-  ]);
+  ],
+  function(error, results) { // parallel complete handler
+    if(error){
+      console.error('loadrep error',error);
+      return response.render('pages/error.ejs');
+    }
 
+    constructTheDetailPageObject(results, chosenRep);
+
+    //console.log('😸 the results from the parallel function ', results);
+    response.render('pages/individualrep.ejs', {value:results});
+  });
 })
 
 
-// app.get('/data/:id', (request, response) => {
-//   //console.log('hitting data')
-//   doSomething(chosenID)
-//     .then( stuff => {
-//       //console.log('stuff from doSomething on /data/: ', stuff);
-//       response.json(stuff);
-//     });
-// })
+app.get('/data/:id', (request, response) => {
+  console.log('hitting data')
+  let chosenID = request.params.id;
+  getFundingInformation(chosenID)
+    .then( funding => {
+      console.log('😸 results from funding ', funding);
+      response.json(funding);
+    });
+})
 
 app.get('/about', (request, response) =>{
   response.render('./pages/about.ejs');

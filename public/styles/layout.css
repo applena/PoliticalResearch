@@ -88,12 +88,6 @@ font-family: 'Fjalla One', sans-serif;
   display: none;
 }
 
-#voting-history.deckhist{
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  flex-direction: column;
-}
 
 #voting-history.deckhist *{
   margin: .7em;
@@ -105,7 +99,6 @@ font-family: 'Fjalla One', sans-serif;
 
 
 #voting-history.deckhist #histheader{
-  margin-top: 2em;
   padding-top: .5em;
   height: 1.5em;
   width: 100%;
@@ -115,15 +108,6 @@ font-family: 'Fjalla One', sans-serif;
   margin-bottom: 2em;
 }
 
-
-
-#repdeck{
-  display:flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
 #repcard *{
   font-size: 24px;
   margin-top: .8em;
@@ -131,20 +115,11 @@ font-family: 'Fjalla One', sans-serif;
   padding: 3px 15px 3px 15px;
 }
 
-#funding-chart{
-  display:flex;
-  justify-content: center;
-  align-items: center;
-  margin: auto;
-  width: 80%;
-}
-
 #funding{
   margin-top: 1em;
-  height: 2em;
   font-size: 24px;
   background-color: #c9eced;
-
+  padding: 1em;
 }
 
 
@@ -275,7 +250,6 @@ header h1{
 }
 
 #voting-history.deckhist #histheader{
-  margin-top: 2em;
   padding-top: .5em;
   height: 1.5em;
   width: 100%;
@@ -301,11 +275,6 @@ header h1{
     border: 1px solid #f3f3f3;
     width: 100%;
   }
-  
-  #repdeck{
-    display: flex;
-    flex-direction: row;
-  }
 
   #repcard{
     display:flex;
@@ -321,8 +290,8 @@ header h1{
   #funding-chart{
     display:flex;
     justify-content: center;
-    align-items: center;
-    width: 70%;
+    width: 100%;
+    height: 100%;
   }
 
   
@@ -466,7 +435,6 @@ header h1{
   justify-content: flex-start;
 }
 #voting-history.deckhist #histheader{
-  margin-top: 2em;
   padding-top: 1.5em;
   width: 100%;
   background-color: #c9eced;
@@ -516,14 +484,15 @@ header h1{
     display:flex;
     justify-content: center;
     align-items: center;
-    width: 60%;
+    width: 100%;
+    height: 100%;
   }
 
 #funding{
   margin-top: 1em;
-  height: 3em;
-  font-size: 40px;
+  font-size: 24px;
   background-color: #c9eced;
+  padding: 1em;
 
 }
   

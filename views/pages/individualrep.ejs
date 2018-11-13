@@ -7,30 +7,31 @@
   <%- include ../partials/header.ejs %>
   <main>
     <div class="page-header">
-      <h2><%= value.name %></h2>
-  </div>
-    <p class="hidden repid"><%= value.id %></p>
-    <div id="repdeck">
-    <img id="imgcard" src="<%= value.image_url %>" alt="<%= value.name %>" />
-    <div id="repcard">
-      <p>Political Affiliation: <%= value.political_affiliation %></p>
-      <p>Role: <%= value.role %></p>
+      <h2><%= value[2].name %></h2>
     </div>
-  </div>
-  
-    <div class="deck" id="funding">
-      <p>Sources of Funding: </p>
-    </div>
-    <div id="funding-chart">
-        <canvas id="fundingChart" style="position: relative; height:4em; width:4em"></canvas>
-    </div>
-        <div class="deckhist" id="voting-history">
-            <p id="histheader">Recent Voting History:</p>
-            <% value.voteHistory.forEach(vote => { %>
-              <h3><%= vote.description %></h3>
-              <p><%= vote.position%></p>
-            <% }) %>
-          </div>
+    <p class="hidden repid"><%= value[5].id %></p>
+    <section id="details-deck">
+      <div id="repdeck">
+        <img id="imgcard" src="<%= value[6].image_url %>" alt="<%= value[2].name %>" />
+        <p>Political Affiliation: <%= value[4].political_affiliation %></p>
+        <p>Role: <%= value[3].role %></p>
+      </div>
+    
+      <div class="card" id="funding">
+        <p>Sources of Funding: </p>
+        <div id="funding-chart">
+          <canvas id="fundingChart" style="position: relative; height:4em; width:4em"></canvas>
+        </div>
+      </div>
+      
+      <div class="deckhist" id="voting-history">
+        <p id="histheader">Recent Voting History:</p>
+        <% value[1].forEach(vote => { %>
+          <h3><%= vote.description %></h3>
+          <p><%= vote.position%></p>
+        <% }) %>
+      </div>
+    </section>
     
   </main>
   <%- include ../partials/footer.ejs %>

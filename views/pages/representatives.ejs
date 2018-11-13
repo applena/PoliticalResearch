@@ -38,29 +38,6 @@
     </div>
     </section>
 
-    <section id="state-rep" class="deck">
-        <legend>State Representatives</legend>
-
-        <div class="innerdeck">
-
-      <% value.reps.forEach(item => { %>
-        <% if(/State/.test(item.role)){ %>
-        <div class="card">
-
-          <a href="/loadrep/<%=item.id%>">
-            <h3><%= item.name %></h3>
-            <p>Role: <%= item.role %></p>
-            <img src="<%= item.img_url %>" alt="<%= item.politician %>" />
-            <p>Identifies as: <%= item.political_affiliation %></p>
-            <p><a target="blank" href="<%= item.website_url %>">Website</a></p>
-            <p>Phone: <%= item.phone %></p>
-          </a>
-
-        </div>
-      <% }}) %>
-      </div>
-    </section>
-
   </main>
   <%- include ../partials/footer.ejs %>
 </body>

@@ -107,8 +107,9 @@ header {
 
 
 #imgcard{
-  width:20em; 
   margin: 1em;
+  display: inline-block;
+  float: left;
 }
 /*--------------------------*/
 

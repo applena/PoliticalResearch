@@ -1,20 +1,22 @@
 'use strict';
-
 let ctx = document.getElementById('fundingChart').getContext('2d');
 let id = $('.repid').text();
 let labels = [];
 let data = [];
 
 function getData () {
-  // $.get(`http://localhost:3000/data/${id}`) \\for local testing only
-  $.get(`https://politicalresearch301.herokuapp.com/data/${id}`)
+  console.log('😸 getting into getData');
+  $.get(`http://localhost:3000/data/${id}`)
+  //$.get(`https://politicalresearch301.herokuapp.com/data/${id}`)
     .then (json => {
-      makeChart(json.vote);
+      console.log('😸 json info: ', json);
+      makeChart(json);
       drawChart();
     })
 }
-
+  
 function makeChart (arr) {
+  console.log('😸 getting into makeChart arr :', arr);
   arr.map(contributor => {
     return labels.push(contributor.name);
   })
@@ -24,6 +26,7 @@ function makeChart (arr) {
 }
 
 function drawChart () {
+  console.log('😸 getting into drawChart');
   let chart = new Chart(ctx, {
     type: 'pie',
     data: {
