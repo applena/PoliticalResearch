@@ -6,7 +6,7 @@
   <main>
     <div class="page-header">
 
-      <h2>Your District is <%= value.district %></h2>
+      <h2>Your District is <%= value.district.stateDistrict %></h2>
 
   </div>
     <section id="intro">
@@ -19,7 +19,7 @@
 
       <div class="innerdeck">
 
-      <% value.reps.forEach(item => { console.log(item.image_url);%>
+      <% value.reps.forEach(item => { %>
         <% if(/Federal/.test(item.role)){ %>
           <div class="card">
 
