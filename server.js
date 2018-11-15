@@ -55,6 +55,8 @@ app.post('/representatives', (request, response) =>{
       //reutrns the data from propublica api - not formatted
       getPropublicaIds('senate', userState)
         .then (results => {
+          
+          //console.log('these are the results from the propublica api call ', results);
           callback(null, results); // results [1] in parallel complete handler
         })
         .catch (error => {
@@ -90,6 +92,7 @@ app.post('/representatives', (request, response) =>{
     //call propublica api to get federal house reps
     getPropublicaIds('house', userState, federalNumber)
       .then (results => {
+        //console.log('😸 propublica results ', results);
         propublicaList = propublicaList.concat(results[0]);
       
         //puts the propublica national rep id into the rep data object
@@ -102,12 +105,16 @@ app.post('/representatives', (request, response) =>{
               console.error(rep.name, 'no propublica record');
             }
             rep.propublica_id = propublicaRep.id;
+            rep.reelction = propublicaRep.next_election;
+            rep.twitter = propublicaRep.twitter_id;
+            rep.facebook = propublicaRep.facebook_account;
+            rep.youtube = propublicaRep.youtube_id;
           }
         })
       })
       .catch (console.log(error));
     
-
+    console.log('revised repsList to include reelection ', repsList);
     //combine all opensecrets data
     //puts the open secrets rep id into the rep data object
     repsList.map(rep => {
@@ -162,6 +169,7 @@ app.get('/loadrep/:id', (request,response) => {
       return response.render('pages/error.ejs');
     }
 
+    console.log('getting into construct detail page');
     constructTheDetailPageObject(results, chosenRep);
 
     //console.log('😸 the results from the parallel function ', results);
@@ -175,7 +183,7 @@ app.get('/data/:id', (request, response) => {
   let chosenID = request.params.id;
   getFundingInformation(chosenID)
     .then( funding => {
-      console.log('😸 results from funding ', funding);
+      //console.log('😸 results from funding ', funding);
       response.json(funding);
     });
 })

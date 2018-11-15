@@ -1,13 +1,4 @@
 @media (min-width:400px) {
-  /* body{
-   background-image: url(flag.jpg);
-   background-repeat: repeat; 
-  } */
-
-/* nav ul li{
-  align-content: space-around;
-  margin: 3em;
-} */
 
 header h1{
 font-size: 4.3em;
@@ -19,10 +10,10 @@ font-family: 'Fjalla One', sans-serif;
 }
 
 .page-header{
+  background-color: #003366;
   display:flex; 
   align-content: center;
   justify-content: center;
-  height: 4em;
   font-weight: bold;
 }
 
@@ -90,22 +81,29 @@ font-family: 'Fjalla One', sans-serif;
 
 
 #voting-history.deckhist *{
-  margin: .7em;
-  font-size: 18px;
   font-family: 'Raleway', sans-serif;
 }
 
+#voting-history {
+  padding: 1em;
+}
 
+#voting-history h3 {
+  padding-top: 1em;
+}
 
+#voting-history p {
+  padding-top: 1em;
+}
 
 #voting-history.deckhist #histheader{
   padding-top: .5em;
+  padding-bottom: .5em;
   height: 1.5em;
   width: 100%;
   font-size: 24px;
-  background-color: #c9eced;
+  background-color: gray;
   text-align:center;
-  margin-bottom: 2em;
 }
 
 #repcard *{
@@ -118,7 +116,7 @@ font-family: 'Fjalla One', sans-serif;
 #funding{
   margin-top: 1em;
   font-size: 24px;
-  background-color: #c9eced;
+  border: 2px solid gray;
   padding: 1em;
 }
 
@@ -186,11 +184,6 @@ footer{
 
 
 @media (min-width:800px){
-  
-  /* nav ul li{
-    align-content: space-around;
-    margin: 3em;
-  } */
 
 
 header h1{
@@ -233,7 +226,7 @@ header h1{
     width: 80%;
     margin: auto;
     border: 2px solid #f3f3f3;
-    color: red;
+    color: #bf795e;
      display: flex; 
     flex-direction: column;
   }
@@ -251,12 +244,12 @@ header h1{
 
 #voting-history.deckhist #histheader{
   padding-top: .5em;
-  height: 1.5em;
+  padding-bottom: .5em;
+  height: 1em;
   width: 100%;
   font-size: 24px;
-  background-color: #c9eced;
+  background-color: gray;
   text-align:center;
-  margin-bottom: 2em;
 }  
   #national-rep .innerdeck {
     display: flex;
@@ -331,7 +324,6 @@ header h1{
     margin: 2em;
   }
   fieldset legend #address{
-    /* margin-left: 10em; */
     display:flex;
     justify-content: center;
     align-content: center;
@@ -369,11 +361,6 @@ header h1{
     font-size: 1.8em;
   }
   
-  /* nav ul li{
-    align-content: space-around;
-    margin: 3em;
-  } */
-  
   .page-header{
     display:flex; 
     align-content: center;
@@ -404,7 +391,7 @@ header h1{
     width: 80%;
     margin: auto;
     border: 2px solid #f3f3f3;
-    color: red;
+    color: #bf795e;
     display: flex;
     flex-direction: column;
   }
@@ -435,12 +422,13 @@ header h1{
   justify-content: flex-start;
 }
 #voting-history.deckhist #histheader{
-  padding-top: 1.5em;
+  padding-top: .5em;
+  padding-bottom: .5em;
   width: 100%;
-  background-color: #c9eced;
+  background-color: gray ;
   text-align:center;
-  margin-bottom: 2em;
-  height: 3em;
+  margin-bottom: 1em;
+  height: 1em;
   font-size: 40px;
 }
   #address {
@@ -491,7 +479,7 @@ header h1{
 #funding{
   margin-top: 1em;
   font-size: 24px;
-  background-color: #c9eced;
+  border: 2px solid gray;
   padding: 1em;
 
 }

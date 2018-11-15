@@ -16,7 +16,7 @@ function getData () {
 }
   
 function makeChart (arr) {
-  console.log('😸 getting into makeChart arr :', arr);
+  //console.log('😸 getting into makeChart arr :', arr);
   arr.map(contributor => {
     return labels.push(contributor.name);
   })
