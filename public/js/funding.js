@@ -6,7 +6,7 @@ let data = [];
 
 function getData () {
   console.log('😸 getting into getData');
-  $.get(`http://localhost:3000/data/${id}`)
+  $.get(`/data/${id}`)
   //$.get(`https://politicalresearch301.herokuapp.com/data/${id}`)
     .then (json => {
       console.log('😸 json info: ', json);
