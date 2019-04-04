@@ -5,14 +5,13 @@ const cache = require('./cache/index');
 const getRepresentatives = require('./lib/getRepresentatives');
 const express = require('express');
 const cors = require('cors');
-//const doSomething = require('./lib/doSomething');
 const getPropublicaIds = require('./lib/getPropublicaIds');
 const getAllRepsByState = require('./lib/getAllRepsByState');
 const getFundingInformation = require('./lib/getFundingInformation');
 const retrieveLatestVotePositions = require('./lib/retrieveLatestVotePositions');
-const constructTheDetailPageObject = require('./lib/constructTheDetailPageObject');
+// const constructTheDetailPageObject = require('./lib/constructTheDetailPageObject');
 require('dotenv').config();
-let chosenID;
+// let chosenID;
 
 const app = express();
 
@@ -28,14 +27,16 @@ app.get('/', (request, response) => {
   response.render('../views/index.ejs');
 });
 
-app.get('/checkvoter', (request, response)=> {
-  response.render('./pages/checkvoter.ejs');
-});
+// app.get('/checkvoter', (request, response)=> {
+//   response.render('./pages/checkvoter.ejs');
+// });
 
-app.post('/representatives', (request, response) =>{
+app.post('/representatives', (request, response) => {
 
   let userAddress = request.body.street +' '+ request.body.city;
   let userState = request.body.state;
+
+  console.log('😀😀😀😀😀😀😀😀the userAddress and userState, ', userAddress, userState)
 
   async.parallel([
     function(callback) {
@@ -82,13 +83,13 @@ app.post('/representatives', (request, response) =>{
   function(error, results) { // parallel complete handler
     if(error){
       console.error(error);
-      return response.render('./pages/error.ejs');
+      return response.send('error parallel complete handler');
     }
     let repsList = results[0].reps;
     let federalNumber = results[0].districtPair.federalNumber;//federal house
     let propublicaList = results[1];
     let opensecretsList = results[2];
-    
+
     //call propublica api to get federal house reps
     getPropublicaIds('house', userState, federalNumber)
       .then (results => {
@@ -127,7 +128,7 @@ app.post('/representatives', (request, response) =>{
     })
   
     //renders the representatives page
-    response.render('./pages/representatives.ejs', {
+    response.send({
       value: {
         reps: repsList,
         district: results[0].districtPair
@@ -136,7 +137,7 @@ app.post('/representatives', (request, response) =>{
   })
 });
 
-app.get('/loadrep/:id', (request,response) => {
+app.get('/loadrep/:id', (request) => {
   console.log('hitting loadrep');
   let chosenID = request.params.id;
   let chosenRep = cache.reps[chosenID];
@@ -162,21 +163,19 @@ app.get('/loadrep/:id', (request,response) => {
           callback(error);
         })
     }
-  ],
-  function(error, results) { // parallel complete handler
-    if(error){
-      console.error('loadrep error',error);
-      return response.render('pages/error.ejs');
-    }
+  ])});
+// function(error, results) { // parallel complete handler
+//   if(error){
+//     console.error('loadrep error',error);
+//     return response.send('error');
+//   }
 
-    console.log('getting into construct detail page');
-    constructTheDetailPageObject(results, chosenRep);
+//   console.log('getting into construct detail page');
+//   constructTheDetailPageObject(results, chosenRep);
 
-    //console.log('😸 the results from the parallel function ', results);
-    response.render('pages/individualrep.ejs', {value:results});
-  });
-})
-
+//   //console.log('😸 the results from the parallel function ', results);
+//   response.render('pages/individualrep.ejs', {value:results});
+// });
 
 app.get('/data/:id', (request, response) => {
   console.log('hitting data')
@@ -188,9 +187,9 @@ app.get('/data/:id', (request, response) => {
     });
 })
 
-app.get('/about', (request, response) =>{
-  response.render('./pages/about.ejs');
-})
+// app.get('/about', (request, response) =>{
+//   response.render('./pages/about.ejs');
+// })
 
 app.listen(PORT, () => {
   console.log('listening on port ' + PORT);
