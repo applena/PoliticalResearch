@@ -44,19 +44,21 @@ app.post('/representatives', (request, response) => {
       //returns formatted rep objects
       getRepresentatives(userAddress, userState)
         .then (results => {
+          console.log('the results from getRepresentatives', results);
           callback(null, results); // results[0] in parallel complete handler
         })
         .catch (error => {
           callback(error);
         })
     },
-
+      
     function(callback) {
       //propublia senate api call
       //reutrns the data from propublica api - not formatted
       getPropublicaIds('senate', userState)
         .then (results => {
           
+          // console.log('back in the server with propublica results ', results);
           //console.log('these are the results from the propublica api call ', results);
           callback(null, results); // results [1] in parallel complete handler
         })
