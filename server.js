@@ -64,18 +64,18 @@ app.post('/representatives', (request, response) =>{
         })
     },
 
-    function(callback) {
-      //open secrets state api call
-      // returns all reps from userState - not formatted
-      getAllRepsByState(userState)
-        .then (results => {
-          callback(null, results); // results [2] in parallel complete handler
-        })
-        .catch (error => {
-          console.log(error);
-          callback(error);
-        })
-    }
+    // function(callback) {
+    //   //open secrets state api call
+    //   // returns all reps from userState - not formatted
+    //   getAllRepsByState(userState)
+    //     .then (results => {
+    //       callback(null, results); // results [2] in parallel complete handler
+    //     })
+    //     .catch (error => {
+    //       console.log(error);
+    //       callback(error);
+    //     })
+    // }
   ],
 
   //assemble all the data from the three apis
@@ -117,14 +117,14 @@ app.post('/representatives', (request, response) =>{
     console.log('revised repsList to include reelection ', repsList);
     //combine all opensecrets data
     //puts the open secrets rep id into the rep data object
-    repsList.map(rep => {
-      let opensecretRep = opensecretsList.find(value => {
-        return value['@attributes'].firstlast === rep.name;
-      })
-      if(!opensecretRep){console.error('rep not found in opensecrets', rep.name)} else {
-        rep.opensecrets_id = opensecretRep['@attributes'].cid;
-      }
-    })
+    // repsList.map(rep => {
+    //   let opensecretRep = opensecretsList.find(value => {
+    //     return value['@attributes'].firstlast === rep.name;
+    //   })
+    //   if(!opensecretRep){console.error('rep not found in opensecrets', rep.name)} else {
+    //     rep.opensecrets_id = opensecretRep['@attributes'].cid;
+    //   }
+    // })
   
     //renders the representatives page
     response.render('./pages/representatives.ejs', {
