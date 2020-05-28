@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.static('./public'));
 app.use(express.urlencoded({extended:true}));
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 app.set('view engine', 'ejs');
 
@@ -31,12 +31,10 @@ app.get('/', (request, response) => {
 //   response.render('./pages/checkvoter.ejs');
 // });
 
-app.post('/representatives', (request, response) => {
-
-  let userAddress = request.body.street +' '+ request.body.city;
-  let userState = request.body.state;
-
-  console.log('😀😀😀😀😀😀😀😀the userAddress and userState, ', userAddress, userState)
+app.get('/representatives', (request, response) => {
+  console.log('in /representatives', request.query.street);
+  let userAddress = request.query.street;
+  let userState = request.query.state;
 
   async.parallel([
     function(callback) {
@@ -44,7 +42,6 @@ app.post('/representatives', (request, response) => {
       //returns formatted rep objects
       getRepresentatives(userAddress, userState)
         .then (results => {
-          console.log('the results from getRepresentatives', results);
           callback(null, results); // results[0] in parallel complete handler
         })
         .catch (error => {
@@ -57,9 +54,6 @@ app.post('/representatives', (request, response) => {
       //reutrns the data from propublica api - not formatted
       getPropublicaIds('senate', userState)
         .then (results => {
-          
-          // console.log('back in the server with propublica results ', results);
-          //console.log('these are the results from the propublica api call ', results);
           callback(null, results); // results [1] in parallel complete handler
         })
         .catch (error => {
@@ -67,18 +61,18 @@ app.post('/representatives', (request, response) => {
         })
     },
 
-    function(callback) {
-      //open secrets state api call
-      // returns all reps from userState - not formatted
-      getAllRepsByState(userState)
-        .then (results => {
-          callback(null, results); // results [2] in parallel complete handler
-        })
-        .catch (error => {
-          console.log(error);
-          callback(error);
-        })
-    }
+    // function(callback) {
+    //   //open secrets state api call
+    //   // returns all reps from userState - not formatted
+    //   getAllRepsByState(userState)
+    //     .then (results => {
+    //       callback(null, results); // results [2] in parallel complete handler
+    //     })
+    //     .catch (error => {
+    //       console.log(error);
+    //       callback(error);
+    //     })
+    // }
   ],
 
   //assemble all the data from the three apis
@@ -117,20 +111,19 @@ app.post('/representatives', (request, response) => {
       })
       .catch (console.log(error));
     
-    console.log('revised repsList to include reelection ', repsList);
     //combine all opensecrets data
     //puts the open secrets rep id into the rep data object
-    repsList.map(rep => {
-      let opensecretRep = opensecretsList.find(value => {
-        return value['@attributes'].firstlast === rep.name;
-      })
-      if(!opensecretRep){console.error('rep not found in opensecrets', rep.name)} else {
-        rep.opensecrets_id = opensecretRep['@attributes'].cid;
-      }
-    })
+    // repsList.map(rep => {
+    //   let opensecretRep = opensecretsList.find(value => {
+    //     return value['@attributes'].firstlast === rep.name;
+    //   })
+    //   if(!opensecretRep){console.error('rep not found in opensecrets', rep.name)} else {
+    //     rep.opensecrets_id = opensecretRep['@attributes'].cid;
+    //   }
+    // })
   
     //renders the representatives page
-    response.send({
+    response.render('pages/representatives', {
       value: {
         reps: repsList,
         district: results[0].districtPair
@@ -139,14 +132,14 @@ app.post('/representatives', (request, response) => {
   })
 });
 
-app.get('/loadrep/:id', (request) => {
+app.get('/loadrep/:id', (request, response) => {
   console.log('hitting loadrep');
-  let chosenID = request.params.id;
+  let chosenID = request.query.id;
   let chosenRep = cache.reps[chosenID];
 
   async.parallel([
     function(callback) {
-      console.log('hitting get Funding Info');
+      console.log('hitting get Funding Info with chosen id of ', chosenID);
       getFundingInformation(chosenID)
         .then (results => {
           callback(null, results); // results[0] in parallel complete handler
@@ -165,7 +158,18 @@ app.get('/loadrep/:id', (request) => {
           callback(error);
         })
     }
-  ])});
+  ],
+
+  //sends individual rep info to the front
+  function (err, result){
+    response.send({
+      value: {
+        contributors: result[0],
+        voting: result[1]
+      }
+    })
+  }
+  );});
 // function(error, results) { // parallel complete handler
 //   if(error){
 //     console.error('loadrep error',error);
